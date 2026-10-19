@@ -1,0 +1,58 @@
+# Builds the in-browser (Shinylive) version of the tool and tests it in a
+# headless browser: time and data needed to start, time to run the example
+# analysis, on a fast and a throttled (2 Mbit/s) connection and at phone size.
+# Results and screenshots are saved to the branch shinylive-test-results.
+name: Shinylive test
+
+on:
+  workflow_dispatch:   # run by hand from the Actions tab when needed
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "release"
+          use-public-rspm: true
+
+      - name: Install packages
+        run: Rscript -e 'install.packages(c("shiny", "ggplot2", "ggrepel", "shinylive"))'
+
+      - name: Assemble the app folder and export it for the browser
+        run: |
+          mkdir -p app/data
+          cp app.R app/ && cp -r R app/ && cp data/example_transects.csv app/data/
+          Rscript -e 'shinylive::export("app", "site"); cat("shinylive", as.character(packageVersion("shinylive")), "\n")' 2>&1 | tee export_log.txt
+          du -sh site > site_size.txt; du -sh site/* >> site_size.txt; cat site_size.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Serve the site and test it in a headless browser
+        run: |
+          npm install --no-save playwright@1.47.2
+          npx playwright install --with-deps chromium
+          (cd site && python3 -m http.server 8000 >/dev/null 2>&1 &)
+          sleep 3
+          node tools/shinylive_test/test_shinylive.js 2>&1 | tee test_log.txt
+
+      - name: Save results to the shinylive-test-results branch
+        if: always()
+        run: |
+          mkdir -p out && cp -r results/. out/ 2>/dev/null || true
+          cp export_log.txt site_size.txt test_log.txt out/ 2>/dev/null || true
+          echo "commit $GITHUB_SHA, run $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > out/RUN_INFO.txt
+          cd out
+          git init -q -b shinylive-test-results
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -q -m "Shinylive test results for ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" shinylive-test-results

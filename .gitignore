@@ -1,0 +1,19 @@
+# R and RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+renv/library/
+renv/staging/
+renv/local/
+
+# Generated outputs (re-create with scripts/reproduce_case_study.R)
+outputs/case_study/
+
+# Case-study data: not public until release is agreed (see README)
+data/case_study/*.csv
+!data/case_study/settings_case_study.csv
+
+# System files
+.DS_Store
+Thumbs.db
