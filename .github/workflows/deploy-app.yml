@@ -42,6 +42,12 @@ jobs:
           mkdir -p app/data
           cp app.R app/ && cp -r R app/ && cp data/example_transects.csv app/data/
           Rscript -e 'shinylive::export("app", "site")'
+          # GitHub Pages re-compresses the bundled R packages (.tgz) on the fly,
+          # which stops webR from reading them ("Can't download Emscripten
+          # filesystem image metadata"). Removing the bundle makes the app fetch
+          # its packages from the official webR repository (repo.r-wasm.org)
+          # instead, which serves them correctly.
+          rm -rf site/shinylive/webr/packages
 
       - uses: actions/upload-pages-artifact@v3
         with:
