@@ -51,7 +51,24 @@ ui <- fluidPage(
     ".note{color:#555;font-size:0.9em} .warn{color:#9A6B1F} h4{margin-top:18px}
      .alert-box{background:#FFF4E5;border-left:4px solid #C0392B;padding:8px 12px;margin:10px 0}
      .adv{border-top:1px solid #ccc;margin-top:12px;padding-top:6px}
-     .shiny-notification{position:fixed;top:10px;right:10px}"))),
+     .shiny-notification{position:fixed;top:10px;right:10px}
+     #running-box{display:none;position:fixed;top:12px;right:12px;z-index:2000;max-width:340px;background:#fff;
+       border-left:5px solid #0072B2;box-shadow:0 2px 8px rgba(0,0,0,.25);padding:12px 14px;font-size:0.95em}
+     #running-box .spin{display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;
+       border:3px solid #cfd8e3;border-top-color:#0072B2;border-radius:50%;animation:rrspin 1s linear infinite}
+     @keyframes rrspin{to{transform:rotate(360deg)}}"))),
+  # "Running" message shown by the browser itself as soon as Run analysis or
+  # Compare is clicked, and hidden when R reports that the results are ready.
+  # It is drawn in the browser rather than by R because, in the in-browser
+  # version, R cannot update the page until a calculation has finished.
+  tags$div(id = "running-box", tags$span(class = "spin"), tags$strong("Running\u2026"), tags$br(),
+           "This usually takes under a minute. In the browser version, large files or many bootstrap ",
+           "replicates can take several minutes. Results appear when it is finished."),
+  tags$script(HTML("
+    $(document).on('click', '#analyze, #ev_run', function() { $('#running-box').show(); });
+    $(document).on('shiny:connected', function() {
+      Shiny.addCustomMessageHandler('running_done', function(x) { $('#running-box').hide(); });
+    });")),
   titlePanel("Reef Restoration Prioritisation Tool"),
   sidebarLayout(
     sidebarPanel(width = 4,
@@ -256,27 +273,14 @@ server <- function(input, output, session) {
   })
 
   # ---- analysis ------------------------------------------------------------------
-  # A message that stays on screen while the analysis runs. In the in-browser
-  # version R and the page share one thread, so the page cannot update during
-  # the calculation (the progress bar stays frozen); the message is therefore
-  # shown first and the calculation starts only after it has reached the screen.
-  RUNNING_MSG <- HTML(paste0("<strong>Running\u2026</strong><br>This usually takes under a minute. In the browser version, ",
-                             "large files or many bootstrap replicates can take several minutes, and the page may not ",
-                             "respond until the results appear."))
-  start_after_flush <- function(trigger) {
-    session$onFlushed(function() trigger(isolate(trigger()) + 1), once = TRUE)
-  }
-  run_now <- reactiveVal(0)
-  observeEvent(input$analyze, {
-    showNotification(RUNNING_MSG, id = "running", duration = NULL, closeButton = FALSE, type = "message")
-    # Switch to the Overview: Shiny computes the analysis only when an output that
-    # needs it is visible (before v2.5.1, clicking Run analysis on the Start page
-    # did nothing until another tab was opened).
-    updateTabsetPanel(session, "tabs", selected = "Overview")
-    start_after_flush(run_now)
-  })
-  res <- eventReactive(run_now(), {
-    on.exit(removeNotification("running"), add = TRUE)
+  # Switch to the Overview when Run analysis is clicked: Shiny computes the
+  # analysis only when an output that needs it is visible (before v2.5.1,
+  # clicking Run analysis on the Start page did nothing until another tab was
+  # opened).
+  observeEvent(input$analyze, updateTabsetPanel(session, "tabs", selected = "Overview"))
+  running_done <- function() session$sendCustomMessage("running_done", list())
+  res <- eventReactive(input$analyze, {
+    on.exit(running_done(), add = TRUE)
     p <- prep()
     if (is.null(p)) { showNotification("Upload a transect CSV first.", type = "error"); req(FALSE) }
     withProgress(message = "Running analysis\u2026", value = 0, {
@@ -286,7 +290,7 @@ server <- function(input, output, session) {
     })
     req(out)
     out
-  }, ignoreInit = TRUE)
+  })
 
   # ---- outputs -------------------------------------------------------------------
   output$start <- renderUI(HTML(paste0(
@@ -473,13 +477,8 @@ server <- function(input, output, session) {
     "the change in coral, turf and CCA cover since before the event (with 95% bootstrap intervals) and the change across the reef.</p>",
     "<p class='note'>These are observed changes, not forecasts of coral loss. The standard analysis (Overview, Decision plane, ",
     "Recommendations) does not depend on this tab; run it on the most recent survey period to see current priorities.</p>")))
-  ev_now <- reactiveVal(0)
-  observeEvent(input$ev_run, {
-    showNotification(RUNNING_MSG, id = "running", duration = NULL, closeButton = FALSE, type = "message")
-    start_after_flush(ev_now)
-  })
-  ev <- eventReactive(ev_now(), {
-    on.exit(removeNotification("running"), add = TRUE)
+  ev <- eventReactive(input$ev_run, {
+    on.exit(running_done(), add = TRUE)
     p <- prep()
     if (is.null(p)) { showNotification("Upload a transect CSV first.", type = "error"); req(FALSE) }
     if (!p$has_dates) { showNotification("The event comparison needs survey dates.", type = "error"); req(FALSE) }
@@ -489,7 +488,7 @@ server <- function(input, output, session) {
     })
     req(out)
     out
-  }, ignoreInit = TRUE)
+  })
   output$evSummary <- renderUI({
     e <- ev(); r <- e$reef
     HTML(paste0(
