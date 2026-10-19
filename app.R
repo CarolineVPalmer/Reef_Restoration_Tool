@@ -256,7 +256,27 @@ server <- function(input, output, session) {
   })
 
   # ---- analysis ------------------------------------------------------------------
-  res <- eventReactive(input$analyze, {
+  # A message that stays on screen while the analysis runs. In the in-browser
+  # version R and the page share one thread, so the page cannot update during
+  # the calculation (the progress bar stays frozen); the message is therefore
+  # shown first and the calculation starts only after it has reached the screen.
+  RUNNING_MSG <- HTML(paste0("<strong>Running\u2026</strong><br>This usually takes under a minute. In the browser version, ",
+                             "large files or many bootstrap replicates can take several minutes, and the page may not ",
+                             "respond until the results appear."))
+  start_after_flush <- function(trigger) {
+    session$onFlushed(function() trigger(isolate(trigger()) + 1), once = TRUE)
+  }
+  run_now <- reactiveVal(0)
+  observeEvent(input$analyze, {
+    showNotification(RUNNING_MSG, id = "running", duration = NULL, closeButton = FALSE, type = "message")
+    # Switch to the Overview: Shiny computes the analysis only when an output that
+    # needs it is visible (before v2.5.1, clicking Run analysis on the Start page
+    # did nothing until another tab was opened).
+    updateTabsetPanel(session, "tabs", selected = "Overview")
+    start_after_flush(run_now)
+  })
+  res <- eventReactive(run_now(), {
+    on.exit(removeNotification("running"), add = TRUE)
     p <- prep()
     if (is.null(p)) { showNotification("Upload a transect CSV first.", type = "error"); req(FALSE) }
     withProgress(message = "Running analysis\u2026", value = 0, {
@@ -266,12 +286,7 @@ server <- function(input, output, session) {
     })
     req(out)
     out
-  })
-  # Show the Overview as soon as Run analysis is clicked. Shiny computes the
-  # analysis only when an output that needs it is visible; previously the switch
-  # to the Overview happened inside the analysis itself, so clicking Run analysis
-  # on the Start page did nothing until the user opened another tab (fixed v2.5.1).
-  observeEvent(input$analyze, updateTabsetPanel(session, "tabs", selected = "Overview"))
+  }, ignoreInit = TRUE)
 
   # ---- outputs -------------------------------------------------------------------
   output$start <- renderUI(HTML(paste0(
@@ -458,7 +473,13 @@ server <- function(input, output, session) {
     "the change in coral, turf and CCA cover since before the event (with 95% bootstrap intervals) and the change across the reef.</p>",
     "<p class='note'>These are observed changes, not forecasts of coral loss. The standard analysis (Overview, Decision plane, ",
     "Recommendations) does not depend on this tab; run it on the most recent survey period to see current priorities.</p>")))
-  ev <- eventReactive(input$ev_run, {
+  ev_now <- reactiveVal(0)
+  observeEvent(input$ev_run, {
+    showNotification(RUNNING_MSG, id = "running", duration = NULL, closeButton = FALSE, type = "message")
+    start_after_flush(ev_now)
+  })
+  ev <- eventReactive(ev_now(), {
+    on.exit(removeNotification("running"), add = TRUE)
     p <- prep()
     if (is.null(p)) { showNotification("Upload a transect CSV first.", type = "error"); req(FALSE) }
     if (!p$has_dates) { showNotification("The event comparison needs survey dates.", type = "error"); req(FALSE) }
@@ -468,7 +489,7 @@ server <- function(input, output, session) {
     })
     req(out)
     out
-  })
+  }, ignoreInit = TRUE)
   output$evSummary <- renderUI({
     e <- ev(); r <- e$reef
     HTML(paste0(
