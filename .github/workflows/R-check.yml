@@ -1,0 +1,49 @@
+# Runs the unit tests on GitHub's machines whenever code is pushed, so there is
+# an independent record that the tool runs. Uses only the synthetic example
+# data; the Isla del Caño monitoring data are not in the repository.
+name: R check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:   # allows a manual run from the Actions tab
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "release"
+          use-public-rspm: true   # pre-built packages: faster installs
+
+      - name: Install packages
+        run: Rscript -e 'install.packages(c("shiny", "ggplot2", "ggrepel", "testthat"))'
+
+      - name: Check that every R file and the app parse
+        run: |
+          Rscript -e 'for (f in c(list.files("R", "[.]R$", full.names = TRUE), "app.R")) { parse(f); cat("parsed", f, "\n") }'
+
+      - name: Run unit tests
+        run: |
+          Rscript -e 'res <- testthat::test_dir("tests/testthat", reporter = "summary", stop_on_failure = TRUE); print(as.data.frame(res)[, c("file", "test", "nb", "failed", "error")])'
+
+      - name: Run the example analysis and write the figures
+        run: |
+          Rscript -e '
+            for (f in sort(list.files("R", "[.]R$", full.names = TRUE))) source(f)
+            prep <- prepare_data(read_transect_file("data/example_transects.csv"))
+            r <- run_analysis(prep, list(B = 100))
+            print(site_table(r))
+            print(r$sensitivity$presets)
+            dir.create("check_outputs")
+            ggplot2::ggsave("check_outputs/decision_plane.png", plot_decision_plane(r), width = 8, height = 7, dpi = 150, bg = "white")
+          '
+
+      - name: Keep the example figure
+        uses: actions/upload-artifact@v4
+        with:
+          name: example-outputs
+          path: check_outputs/

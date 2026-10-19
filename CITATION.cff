@@ -1,0 +1,25 @@
+# Citation metadata (Citation File Format). Zenodo reads this file when a
+# GitHub release is archived. Fill in the [bracketed] fields before release.
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Reef Restoration Prioritisation Tool"
+version: 2.5.1
+date-released: "[YYYY-MM-DD]"
+license: MIT
+type: software
+authors:
+  - family-names: "[Surname]"
+    given-names: Caroline
+    affiliation: "University of Plymouth"
+    orcid: "https://orcid.org/[0000-0000-0000-0000]"
+  # - family-names: [Co-author]
+  #   given-names: [Name]
+keywords:
+  - coral reef
+  - restoration
+  - decision support
+  - R Shiny
+  - Eastern Tropical Pacific
+repository-code: "https://github.com/CarolineVPalmer/Reef_Restoration_Tool"
+url: "https://carolinevpalmer.github.io/Reef_Restoration_Tool/"
+# doi: "[Zenodo concept DOI, added after the first release]"
