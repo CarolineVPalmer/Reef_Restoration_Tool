@@ -3,7 +3,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Reef Restoration Prioritisation Tool"
-version: 2.5.1
+version: 2.5.2
 date-released: "[YYYY-MM-DD]"
 license: MIT
 type: software

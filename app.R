@@ -151,8 +151,9 @@ ui <- fluidPage(
         tabPanel("Bleaching event (optional)",
           htmlOutput("evIntro"),
           fluidRow(
-            column(4, dateRangeInput("ev_before", "Surveys before the event"),
-                   helpText("The survey dates that show the reef before bleaching began. If you have none, leave this and tick both boxes on the right; change is then measured from the surveys during the event.")),
+            column(4, checkboxInput("ev_use_before", "I have surveys before the event", TRUE),
+                   conditionalPanel("input.ev_use_before", dateRangeInput("ev_before", "Surveys before the event")),
+                   helpText("Untick this if monitoring began only once bleaching was under way. Change is then measured from the surveys during the event to those after it, so any loss before the first survey is missed.")),
             column(4, checkboxInput("ev_use_during", "I have surveys during the event", FALSE),
                    conditionalPanel("input.ev_use_during", dateRangeInput("ev_during", "Surveys during the event"))),
             column(4, checkboxInput("ev_use_after", "I have surveys after the event", FALSE),
@@ -240,7 +241,7 @@ server <- function(input, output, session) {
          pca_set = input$pca_set, include_trends = input$trends,
          period_months = as.numeric(input$period_months), period_start_month = as.numeric(input$period_start),
          trend_min_periods = input$trend_min_periods, trend_min_days = input$trend_min_days,
-         event_before_from = input$ev_before[1], event_before_to = input$ev_before[2],
+         event_use_before = input$ev_use_before, event_before_from = input$ev_before[1], event_before_to = input$ev_before[2],
          event_use_during = input$ev_use_during, event_during_from = input$ev_during[1], event_during_to = input$ev_during[2],
          event_use_after = input$ev_use_after, event_after_from = input$ev_after[1], event_after_to = input$ev_after[2])
   })
@@ -262,6 +263,7 @@ server <- function(input, output, session) {
     updateSelectInput(session, "period_start", selected = s$period_start_month)
     updateNumericInput(session, "trend_min_periods", value = s$trend_min_periods)
     updateNumericInput(session, "trend_min_days", value = s$trend_min_days)
+    updateCheckboxInput(session, "ev_use_before", value = !isFALSE(s$event_use_before))
     updateCheckboxInput(session, "ev_use_during", value = isTRUE(s$event_use_during))
     updateCheckboxInput(session, "ev_use_after", value = isTRUE(s$event_use_after))
     for (ph in c("before", "during", "after")) {
@@ -473,7 +475,7 @@ server <- function(input, output, session) {
   output$evIntro <- renderUI(HTML(paste0(
     "<p>Compare surveys made <strong>before</strong>, <strong>during</strong> and <strong>after</strong> a bleaching event. ",
     "Choose the dates of each phase you have. With surveys <em>before</em> the event, the comparison works with <em>during</em>, ",
-    "<em>after</em> or both, so it can be used while an event is still under way. Without them, surveys <em>during</em> the event are compared with those <em>after</em> it; losses before the first survey are then missed. For each site you get bleaching during the event, ",
+    "<em>after</em> or both, so it can be used while an event is still under way. Without them (untick <em>I have surveys before the event</em>), surveys <em>during</em> the event are compared with those <em>after</em> it; losses before the first survey are then missed. For each site you get bleaching during the event, ",
     "the change in coral, turf and CCA cover since before the event (with 95% bootstrap intervals) and the change across the reef.</p>",
     "<p class='note'>These are observed changes, not forecasts of coral loss. The standard analysis (Overview, Decision plane, ",
     "Recommendations) does not depend on this tab; run it on the most recent survey period to see current priorities.</p>")))
