@@ -6,6 +6,11 @@ name: Shinylive test
 
 on:
   workflow_dispatch:   # run by hand from the Actions tab when needed
+    inputs:
+      app_url:
+        description: "Test this URL instead of a local build (e.g. the published app)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -42,7 +47,7 @@ jobs:
           npx playwright install --with-deps chromium
           (cd site && python3 -m http.server 8000 >/dev/null 2>&1 &)
           sleep 3
-          node tools/shinylive_test/test_shinylive.js 2>&1 | tee test_log.txt
+          APP_URL="${{ inputs.app_url }}" node tools/shinylive_test/test_shinylive.js 2>&1 | tee test_log.txt
 
       - name: Save results to the shinylive-test-results branch
         if: always()

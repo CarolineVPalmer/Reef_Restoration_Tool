@@ -56,7 +56,7 @@ async function runOnce(page, frame, label, B, maxMinutes, log) {
   page.on("frameattached", f => f.on && null);
   const results = [];
   const t0 = Date.now();
-  await page.goto("http://localhost:8000/", { waitUntil: "load", timeout: 600000 });
+  await page.goto(process.env.APP_URL || "http://localhost:8000/", { waitUntil: "load", timeout: 600000 });
   const frame = await findFrame(page, "#analyze", 600000);
   results.push({ step: "app ready", seconds: (Date.now() - t0) / 1000 });
   await frame.locator("#datafile").setInputFiles("app/data/example_transects.csv");
