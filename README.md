@@ -4,7 +4,7 @@ A free, point-and-click R Shiny tool that turns routine coral reef transect data
 
 The tool is a first-pass screening step before detailed site-suitability assessment. It is not a measure of restoration success and has not been validated against restoration outcomes.
 
-Version: 2.5.1 (see `CHANGES.md`). Manuscript: *An accessible reef management tool for prioritising coral restoration in data-limited and low-resource settings* [in preparation].
+Version: 2.5.2 (see `CHANGES.md`). Manuscript: *An accessible reef management tool for prioritising coral restoration in data-limited and low-resource settings* [in preparation].
 
 ## Use it in your browser
 
