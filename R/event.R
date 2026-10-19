@@ -24,7 +24,9 @@ EVENT_VARS <- c("coral", "turf", "cca", "bleached", "disease")
 #'   `NA` dates. "During" and "after" are used only if switched on.
 event_phases_from_settings <- function(s) {
   s <- modifyList(DEFAULT_SETTINGS, s)
-  use <- c(TRUE, isTRUE(s$event_use_during), isTRUE(s$event_use_after))
+  # 'before' is used unless switched off (v2.5.2; older settings files have no
+  # event_use_before and keep their previous behaviour).
+  use <- c(!isFALSE(s$event_use_before), isTRUE(s$event_use_during), isTRUE(s$event_use_after))
   from <- c(as_date_or_na(s$event_before_from), as_date_or_na(s$event_during_from),
             as_date_or_na(s$event_after_from))
   to <- c(as_date_or_na(s$event_before_to), as_date_or_na(s$event_during_to),

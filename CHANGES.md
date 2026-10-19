@@ -200,4 +200,8 @@ Files: `app.R` (interface), `analysis.R` (all calculations), `example_transects.
 - Deploy to Posit Connect Cloud; archive on Zenodo with the example files.
 - Optional: Spanish-language interface for managers in the Eastern Tropical Pacific.
 
-- Browser version: the bundled R packages are no longer published with the app, because GitHub Pages re-compresses them and the app could not start ("Can't download Emscripten filesystem image metadata"). Packages now load from the official webR repository.
+- Browser version: the bundled R packages are no longer published with the app, because GitHub Pages re-compresses them and the app could not start ("Can't download Emscripten filesystem image metadata"). Packages now load from the official webR repository.## 2.5.2 (19 October 2026)
+
+- Bleaching-event mode: new tick box "I have surveys before the event" (on by default). Untick it when monitoring began only once bleaching was under way; change is then measured from the surveys during the event to those after it. Before this, the app always used its "before" dates, which defaulted to the first three months of data and so could overlap the "during" surveys. Calculations are otherwise unchanged; older settings files load as before.
+
+

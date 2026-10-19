@@ -65,3 +65,14 @@ test_that("without 'before', change is measured from 'during' and flagged as an 
     event_use_during = TRUE, event_during_from = "2024-06-01", event_during_to = "2024-06-30"))
   expect_error(event_comparison(prep$df, only_during, B = 10), "after")
 })
+
+test_that("'before' can be switched off even when its dates are filled in (as in the app)", {
+  prep <- prepare_data(read_transect_file(example_path))
+  ph <- event_phases_from_settings(list(
+    event_use_before = FALSE, event_before_from = "2024-06-01", event_before_to = "2024-06-30",
+    event_use_during = TRUE, event_during_from = "2024-06-01", event_during_to = "2024-06-30",
+    event_use_after = TRUE, event_after_from = "2025-09-01", event_after_to = "2025-09-30"))
+  expect_true(is.na(ph$from[ph$phase == "before"]))
+  ev <- event_comparison(prep$df, ph, B = 20, seed = 2)
+  expect_equal(ev$reference, "during")
+})

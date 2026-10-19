@@ -7,7 +7,7 @@
 # Moved verbatim from analysis.R (v2.3.0); roxygen headers added.
 # =============================================================================
 
-APP_VERSION <- "2.5.1"
+APP_VERSION <- "2.5.2"
 
 # -----------------------------------------------------------------------------
 # 1. Defaults
@@ -36,8 +36,11 @@ DEFAULT_SETTINGS <- list(
   sens_factor        = 0.5,      # one-at-a-time sensitivity: each weight x (1 -/+ factor)
   global_draws       = 1000,     # global sensitivity: random weight sets
   # Optional bleaching-event mode (v2.5.0; see R/event.R). Not used by the
-  # standard analysis. "Before" is always needed; "during" and "after" are used
-  # only when switched on, so the comparison works while an event is under way.
+  # standard analysis. Each phase is used only when switched on. With "before",
+  # the comparison works while an event is under way; without it (v2.5.2), change
+  # is measured from "during" to "after", e.g. where monitoring began only once
+  # bleaching was visible.
+  event_use_before   = TRUE,
   event_before_from  = NA,
   event_before_to    = NA,
   event_use_during   = FALSE,
