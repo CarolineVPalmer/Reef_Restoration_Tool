@@ -2,6 +2,7 @@
 
 ## Version 2.5.1 (in development)
 
+- A "Running…" message now appears as soon as Run analysis (or Compare) is clicked and stays until the results are ready. In the browser version the page cannot update during the calculation, so the progress bar alone looked as if nothing was happening.
 - **Bug fix:** clicking Run analysis on the Start page did nothing until another tab was opened, because the switch to the Overview happened inside the (lazily computed) analysis. The app now switches to the Overview on click, which starts the analysis.
 - Event mode works without surveys before the event: "during" becomes the reference and the results say that losses before the first survey are missed (approved 19 Oct 2026). Many teams start surveying only once bleaching is under way.
 - `scripts/event_case_study_isla_del_cano.R`: post hoc test of the event mode on the 2023–24 event, using the periods of Palmer et al. (2025).
