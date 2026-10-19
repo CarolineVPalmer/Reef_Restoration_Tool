@@ -1,0 +1,1 @@
+[{"step":"app ready","seconds":17.201},{"label":"light_B50","B":50,"status":"ok","seconds":20.082},{"label":"default_B200","B":200,"status":"ok","seconds":20.072}]

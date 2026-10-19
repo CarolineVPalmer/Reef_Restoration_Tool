@@ -1,0 +1,13 @@
+Downloading  34% ■■■■■■■■■■■                       2s
+Downloading  80% ■■■■■■■■■■■■■■■■■■■■■■■■■         1s
+Downloading 100% ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   0s
+
+✔ Updated metadata database: 6.75 MB in 10 files.
+
+ℹ Updating metadata database
+✔ Updating metadata database ... done
+
+Warning message:
+In find.package(pkgs, lib.loc = NULL, quiet = FALSE, !is_quiet()) :
+  there is no package called ‘rstudioapi’
+shinylive 0.5.0 

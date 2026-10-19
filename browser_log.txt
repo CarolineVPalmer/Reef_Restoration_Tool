@@ -1,0 +1,40 @@
+[console log] Service Worker registered
+[console log] Service Worker registered
+[console info] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+[console warning] WebR is using `PostMessage` communication channel, nested R REPLs are not available.
+[console log] preload echo:
+[console log] preload echo:R version 4.6.0 (2026-04-24) -- "Because it was There"
+[console log] preload echo:Copyright (C) 2026 The R Foundation for Statistical Computing
+[console log] preload echo:Platform: wasm32-unknown-emscripten (32-bit)
+[console log] preload echo:
+[console log] preload echo:R is free software and comes with ABSOLUTELY NO WARRANTY.
+[console log] preload echo:You are welcome to redistribute it under certain conditions.
+[console log] preload echo:Type 'license()' or 'licence()' for distribution details.
+[console log] preload echo:
+[console log] preload echo:R is a collaborative project with many contributors.
+[console log] preload echo:Type 'contributors()' for more information and
+[console log] preload echo:'citation()' on how to cite R or R packages in publications.
+[console log] preload echo:
+[console log] preload echo:Type 'demo()' for some demos, 'help()' for on-line help, or
+[console log] preload echo:'help.start()' for an HTML browser interface to help.
+[console log] preload echo:Type 'q()' to quit R.
+[console log] preload echo:
+[console error] preload error:Downloading webR package: gtable
+[console error] preload error:Downloading webR package: isoband
+[console error] preload error:Downloading webR package: S7
+[console error] preload error:Downloading webR package: farver
+[console error] preload error:Downloading webR package: labeling
+[console error] preload error:Downloading webR package: RColorBrewer
+[console error] preload error:Downloading webR package: viridisLite
+[console error] preload error:Downloading webR package: scales
+[console error] preload error:Downloading webR package: vctrs
+[console error] preload error:Downloading webR package: ggplot2
+[console error] preload error:Downloading webR package: ggrepel
+[console error] preload error:Downloading webR package: rstudioapi
+[console warning] DEPRECATED: This filename doesn't follow the convention, use bootstrap-datepicker.en-CA.js instead.
+[console warning] DEPRECATED: The language code "kh" is deprecated and will be removed in 2.0. For Khmer support use "km" instead.
+[console warning] DEPRECATED: The language code "kr" is deprecated and will be removed in 2.0. For korean support use "ko" instead.
+[console warning] DEPRECATED: This language code "rs-latin" is deprecated (invalid serbian language code) and will be removed in 2.0. For Serbian latin support use "sr-latin" instead.
+[console warning] DEPRECATED: This language code "rs" is deprecated (invalid serbian language code) and will be removed in 2.0. For Serbian support use "sr" instead.
+[light_B50 +20 s] progress:  | modal: 
+[default_B200 +20 s] progress:  | modal: 
