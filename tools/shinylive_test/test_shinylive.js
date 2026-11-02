@@ -102,6 +102,15 @@ async function runOnce(page, frame, label, B, maxMinutes, log) {
   if (results[results.length - 1].status === "ok") {
     results.push(await runOnce(page, frame, "default_B200", 200, 40, log));
   }
+  // downloads that need an analysis
+  for (const id of ["#dl_results", "#dl_plot", "#dl_settings"]) {
+    const out = { step: "download after analysis " + id };
+    try {
+      const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 60000 }), frame.locator(id).click()]);
+      const pth = await dl.path(); out.name = dl.suggestedFilename(); out.bytes = pth ? fs.statSync(pth).size : 0;
+    } catch (e) { out.error = String(e).slice(0, 200); }
+    results.push(out);
+  }
   // v2.6.0: a Reef Check Excel data sheet, uploaded on its own
   if (process.env.EXTRA_UPLOAD) {
     await frame.locator("#datafile").setInputFiles(process.env.EXTRA_UPLOAD);
