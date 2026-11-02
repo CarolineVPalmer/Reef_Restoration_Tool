@@ -59,6 +59,20 @@ async function runOnce(page, frame, label, B, maxMinutes, log) {
   await page.goto(process.env.APP_URL || "http://localhost:8000/", { waitUntil: "load", timeout: 600000 });
   const frame = await findFrame(page, "#analyze", 600000);
   results.push({ step: "app ready", seconds: (Date.now() - t0) / 1000 });
+  // download links for the example files
+  for (const id of ["#dl_example", "#dl_example_rc"]) {
+    const out = { step: "download " + id };
+    try {
+      out.href = await frame.locator(id).getAttribute("href");
+      const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 30000 }), frame.locator(id).click()]);
+      const path = await dl.path();
+      const txt = path ? fs.readFileSync(path, "utf8") : "";
+      out.name = dl.suggestedFilename(); out.bytes = txt.length; out.first_line = txt.split("\n")[0].slice(0, 200);
+      out.failure = await dl.failure();
+    } catch (e) { out.error = String(e).slice(0, 300); }
+    results.push(out);
+  }
+  await page.screenshot({ path: "results/start.png", fullPage: true });
   await frame.locator("#datafile").setInputFiles("app/data/example_transects.csv");
   await page.waitForTimeout(5000);
   results.push(await runOnce(page, frame, "light_B50", 50, 25, log));
