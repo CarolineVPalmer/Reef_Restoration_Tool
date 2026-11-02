@@ -93,6 +93,10 @@ Each GitHub release is archived on Zenodo, which issues a DOI. Connect the repos
 
 See `CITATION.cff`. [Add the manuscript reference and the Zenodo DOI after release.]
 
+## Use of AI assistance
+
+The code, tests and documentation were developed with assistance from Claude (Anthropic), an AI model. All design decisions were made by the author, and the code and its outputs were checked by the author; the changes are recorded in `CHANGES.md` and the design records in `docs/`. Earlier commits in this repository are labelled with Claude as author.
+
 ## Licence
 
 Code: MIT (see `LICENSE`). [Confirm. Data, when released: CC BY 4.0 is suggested.]
