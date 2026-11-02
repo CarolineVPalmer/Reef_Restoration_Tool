@@ -73,29 +73,6 @@ async function runOnce(page, frame, label, B, maxMinutes, log) {
     results.push(out);
   }
   await page.screenshot({ path: "results/start.png", fullPage: true });
-  // diagnostics: iframe attributes and alternative download methods
-  results.push({ step: "iframes", info: await page.evaluate(() => Array.from(document.querySelectorAll("iframe")).map(f => ({ src: f.getAttribute("src"), sandbox: f.getAttribute("sandbox"), allow: f.getAttribute("allow") }))) });
-  results.push({ step: "frame url", url: frame.url() });
-  const tries = {
-    data_uri: 'data:text/csv;charset=utf-8,a%2Cb%0A1%2C2',
-    static_abs: new URL("app.json", page.url()).pathname,
-    blob: "BLOB"
-  };
-  for (const [k, href] of Object.entries(tries)) {
-    const out = { step: "alt download " + k };
-    try {
-      const [dl] = await Promise.all([
-        page.waitForEvent("download", { timeout: 15000 }),
-        frame.evaluate(([h, t]) => {
-          const a = document.createElement("a");
-          a.href = h === "BLOB" ? URL.createObjectURL(new Blob(["a,b\n1,2"], { type: "text/csv" })) : h;
-          a.download = "t.csv"; if (t) a.target = t; document.body.appendChild(a); a.click(); a.remove();
-        }, [href, k === "static_abs" ? "_top" : ""])]);
-      const pth = await dl.path(); out.ok = !!pth; out.failure = await dl.failure();
-      if (pth) out.first = fs.readFileSync(pth, "utf8").slice(0, 60);
-    } catch (e) { out.error = String(e).slice(0, 200); }
-    results.push(out);
-  }
   await frame.locator("#datafile").setInputFiles("app/data/example_transects.csv");
   await page.waitForTimeout(5000);
   results.push(await runOnce(page, frame, "light_B50", 50, 25, log));
