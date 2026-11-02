@@ -47,7 +47,7 @@ jobs:
           npx playwright install --with-deps chromium
           (cd site && python3 -m http.server 8000 >/dev/null 2>&1 &)
           sleep 3
-          APP_URL="${{ inputs.app_url }}" node tools/shinylive_test/test_shinylive.js 2>&1 | tee test_log.txt
+          APP_URL="${{ inputs.app_url }}" EXTRA_UPLOAD="tests/testthat/fixtures/Paradise 14-03-25 line m.xlsx" node tools/shinylive_test/test_shinylive.js 2>&1 | tee test_log.txt
 
       - name: Save results to the shinylive-test-results branch
         if: always()

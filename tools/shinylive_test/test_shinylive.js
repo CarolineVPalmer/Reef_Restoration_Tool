@@ -65,6 +65,12 @@ async function runOnce(page, frame, label, B, maxMinutes, log) {
   if (results[results.length - 1].status === "ok") {
     results.push(await runOnce(page, frame, "default_B200", 200, 40, log));
   }
+  // v2.6.0: a Reef Check Excel data sheet, uploaded on its own
+  if (process.env.EXTRA_UPLOAD) {
+    await frame.locator("#datafile").setInputFiles(process.env.EXTRA_UPLOAD);
+    await page.waitForTimeout(8000);
+    results.push(await runOnce(page, frame, "reefcheck_excel", 50, 15, log));
+  }
   fs.writeFileSync("results/results.json", JSON.stringify(results, null, 2));
   fs.writeFileSync("results/browser_log.txt", log.join("\n"));
   console.log(JSON.stringify(results));
