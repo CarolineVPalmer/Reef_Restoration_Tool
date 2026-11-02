@@ -1,5 +1,10 @@
 # Changes
 
+## Version 2.6.1 (2 November 2026)
+
+- **Bug fix: downloads did not work in the browser version.** Every download (example files, results, decision plane, settings, donors, sensitivity, trends, trajectories, event results) was cancelled, because Shiny's download links need a server, which the in-browser version does not have. Files are now built in the page from data sent by R, which works in the browser and in RStudio.
+- The Start tab now explains how to use Reef Check data.
+
 ## Version 2.6.0 (2 November 2026)
 
 - **Reef Check data can be used directly** (`R/import_reefcheck.R`). The upload accepts Reef Check's Excel line-transect data sheets (several at once), a segment table (point counts per category per 20 m segment) or a point table (one code per point). Each segment becomes one transect. Hard coral (HC) becomes coral cover; nutrient indicator algae (NIA) macroalgae; rubble (RB) and sand (SD) as named; bleaching and disease are the share of hard-coral points marked HC/B or HC/D, or taken from the count rows of the sheet. Rock (RC) is never read as turf; rock with turf (RCTA) and rock with coralline algae (RCCA), where recorded, are used as turf and CCA.

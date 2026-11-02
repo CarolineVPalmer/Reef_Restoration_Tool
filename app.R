@@ -68,6 +68,17 @@ ui <- fluidPage(
     $(document).on('click', '#analyze, #ev_run', function() { $('#running-box').show(); });
     $(document).on('shiny:connected', function() {
       Shiny.addCustomMessageHandler('running_done', function(x) { $('#running-box').hide(); });
+      // v2.6.1: files are built in the page from data sent by R. Shiny's own
+      // download links are cancelled in the in-browser version, which has no
+      // server to fetch the file from.
+      Shiny.addCustomMessageHandler('download_file', function(m) {
+        var bin = atob(m.data), u = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([u], { type: m.type }));
+        a.download = m.name; document.body.appendChild(a); a.click();
+        setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+      });
     });")),
   titlePanel("Reef Restoration Prioritisation Tool"),
   sidebarLayout(
@@ -75,8 +86,8 @@ ui <- fluidPage(
       h4("1. Data"),
       fileInput("datafile", "Upload transect data", multiple = TRUE, accept = c(".csv", ".txt", ".xlsx", ".xls")),
       helpText("A CSV file in the tool's format, or Reef Check substrate data: their Excel data sheets (one per site, depth and date; select several at once), or a CSV with one row per segment."),
-      downloadLink("dl_example", "Download an example file (synthetic data)"), br(),
-      downloadLink("dl_example_rc", "Download a Reef Check example (synthetic data)"),
+      actionLink("dl_example", "Download an example file (synthetic data)", icon = icon("download")), br(),
+      actionLink("dl_example_rc", "Download a Reef Check example (synthetic data)", icon = icon("download")),
       checkboxInput("day_first", "Dates written day first (e.g. 25/01/2025)", TRUE),
       fileInput("load_settings", "Load saved settings (optional)", accept = ".csv"),
 
@@ -97,9 +108,9 @@ ui <- fluidPage(
       h4("4. Run"),
       actionButton("analyze", "Run analysis", class = "btn-primary"),
       br(), br(),
-      downloadButton("dl_results", "Results"),
-      downloadButton("dl_plot", "Decision plane (PNG)"),
-      downloadButton("dl_settings", "Settings"),
+      actionButton("dl_results", "Results", icon = icon("download")),
+      actionButton("dl_plot", "Decision plane (PNG)", icon = icon("download")),
+      actionButton("dl_settings", "Settings", icon = icon("download")),
 
       div(class = "adv", checkboxInput("advanced", strong("Show advanced settings"), FALSE)),
       conditionalPanel("input.advanced",
@@ -131,10 +142,10 @@ ui <- fluidPage(
         p(class = "note", "Signs (+/−) are fixed so each indicator always acts in its ecological direction; ",
           "you choose how much it counts (0 switches it off). Record why you change any weight."),
         h4("More downloads"),
-        downloadButton("dl_donors", "Donor shortlist"),
-        downloadButton("dl_sens", "Sensitivity"),
-        downloadButton("dl_trends", "Trends"),
-        downloadButton("dl_traj", "Trajectories")
+        actionButton("dl_donors", "Donor shortlist", icon = icon("download")),
+        actionButton("dl_sens", "Sensitivity", icon = icon("download")),
+        actionButton("dl_trends", "Trends", icon = icon("download")),
+        actionButton("dl_traj", "Trajectories", icon = icon("download"))
       ),
       uiOutput("weight_warning")
     ),
@@ -161,7 +172,7 @@ ui <- fluidPage(
             column(4, checkboxInput("ev_use_after", "I have surveys after the event", FALSE),
                    conditionalPanel("input.ev_use_after", dateRangeInput("ev_after", "Surveys after the event")))),
           actionButton("ev_run", "Compare before / during / after", class = "btn-primary"),
-          downloadButton("dl_event", "Event results"),
+          actionButton("dl_event", "Event results", icon = icon("download")),
           htmlOutput("evSummary"),
           plotOutput("evPlot", height = "480px"),
           tableOutput("evTable")),
@@ -303,6 +314,33 @@ server <- function(input, output, session) {
     out
   })
 
+  # ---- downloads (v2.6.1) ------------------------------------------------------------
+  #' Offer a file for download when a button is clicked.
+  #'
+  #' The file is written by `content` to a temporary path, read back and sent to
+  #' the page, which saves it (see the 'download_file' handler in the page
+  #' head). This works in the in-browser version as well as in RStudio, unlike
+  #' Shiny's downloadHandler, whose links are cancelled in the browser version.
+  #' @param id Input id of the button or link.
+  #' @param filename File name, or a function returning it.
+  #' @param content Function writing the file to the path it is given.
+  dl_handler <- function(id, filename, content) {
+    observeEvent(input[[id]], {
+      fn <- if (is.function(filename)) filename() else filename
+      tmp <- tempfile(fileext = paste0(".", tools::file_ext(fn)))
+      on.exit(unlink(tmp), add = TRUE)
+      ok <- tryCatch({ content(tmp); file.exists(tmp) }, error = function(e) {
+        # req() failing (e.g. no analysis run yet) is silent, as with downloadHandler
+        if (!inherits(e, "shiny.silent.error"))
+          showNotification(paste("The file could not be made:", conditionMessage(e)), type = "error")
+        FALSE })
+      if (!isTRUE(ok)) return(invisible())
+      type <- switch(tolower(tools::file_ext(fn)), png = "image/png", csv = "text/csv", "application/octet-stream")
+      session$sendCustomMessage("download_file", list(
+        name = fn, type = type, data = jsonlite::base64_enc(readBin(tmp, "raw", file.info(tmp)$size))))
+    }, ignoreInit = TRUE)
+  }
+
   # ---- outputs -------------------------------------------------------------------
   output$start <- renderUI(HTML(paste0(
     "<h4>What this tool does</h4>",
@@ -315,6 +353,12 @@ server <- function(input, output, session) {
     "<code>macroalgae</code>, <code>bleached</code>, <code>disease</code>, <code>predation</code> (proportion of colonies affected) ",
     "and coral colony counts per taxon in columns starting <code>Tot_</code> (for diversity). Optional: <code>depth</code> (shown beside the results, not scored), <code>rubble</code>, ",
     "<code>rugosity</code>, <code>herbivores</code>, <code>sand</code> (shown, not scored), <code>method</code> (e.g. transect or photogrammetry; used only to warn when methods are mixed). One row per transect or photogrammetry plot. Cover can be 0\u20131 or 0\u2013100. Comma- or semicolon-separated files are accepted.</p>",
+    "<h4>Reef Check data</h4><p>Teams using the Reef Check protocol can upload their substrate data directly: Reef Check's Excel ",
+    "line-transect data sheets (one per site, depth and date; select several at once and save them as .xlsx first), or a CSV with one row per 20 m segment ",
+    "(<code>site</code>, <code>date</code>, <code>segment</code> and the point counts <code>HC</code>, <code>NIA</code>, <code>RC</code>, <code>RB</code>, <code>SD</code> …; ",
+    "optionally <code>hc_bleached</code> and <code>hc_disease</code>). Each segment is treated as a transect. Reef Check does not record turf, crustose coralline algae ",
+    "or coral colonies by taxon, so the classes rest mainly on coral cover, macroalgae, rubble, bleaching and disease and are less certain than with fuller data. ",
+    "Download the Reef Check example to see the layout.</p>",
     "<h4>Steps</h4><ol><li>Upload the file (or try the example).</li><li>Choose which surveys to use. By default sites are compared on the most ",
     "recent survey period, and each site's rate of change over the whole record is added to Urgency.</li>",
     "<li>Choose the reef context that fits your situation (or keep General).</li><li>Click <strong>Run analysis</strong>, then read the Overview ",
@@ -449,13 +493,13 @@ server <- function(input, output, session) {
   })
 
   # ---- downloads -------------------------------------------------------------------
-  output$dl_example_rc <- downloadHandler(
+  dl_handler("dl_example_rc", 
     filename = "example_reefcheck_segments_synthetic.csv",
     content = function(f) {
       src <- file.path("data", "example_reefcheck_segments.csv")
       if (file.exists(src)) file.copy(src, f) else writeLines("The Reef Check example file was not found in the app folder.", f)
     })
-  output$dl_example <- downloadHandler(
+  dl_handler("dl_example", 
     filename = "example_transects_synthetic.csv",
     content = function(f) {
       if (file.exists(EXAMPLE_FILE)) file.copy(EXAMPLE_FILE, f)
@@ -473,16 +517,16 @@ server <- function(input, output, session) {
     writeLines(header_lines(r), f)
     suppressWarnings(utils::write.table(x, f, sep = ",", append = TRUE, row.names = FALSE, qmethod = "double"))
   }
-  output$dl_results <- downloadHandler(function() paste0("reef_tool_results_", Sys.Date(), ".csv"),
+  dl_handler("dl_results", function() paste0("reef_tool_results_", Sys.Date(), ".csv"),
                                        function(f) write_with_header(res(), site_table(res(), digits = 4), f))
-  output$dl_donors <- downloadHandler(function() paste0("reef_tool_donors_", Sys.Date(), ".csv"),
+  dl_handler("dl_donors", function() paste0("reef_tool_donors_", Sys.Date(), ".csv"),
                                       function(f) write_with_header(res(), fmt(res()$donors, 4), f))
-  output$dl_sens <- downloadHandler(function() paste0("reef_tool_sensitivity_", Sys.Date(), ".csv"),
+  dl_handler("dl_sens", function() paste0("reef_tool_sensitivity_", Sys.Date(), ".csv"),
                                     function(f) write_with_header(res(), merge(res()$sensitivity$by_site, res()$sensitivity$presets, by = "site"), f))
-  output$dl_traj <- downloadHandler(function() paste0("reef_tool_trajectories_", Sys.Date(), ".csv"),
+  dl_handler("dl_traj", function() paste0("reef_tool_trajectories_", Sys.Date(), ".csv"),
                                     function(f) { t <- res()$trajectories
                                       write_with_header(res(), if (is.null(t)) data.frame(note = "No trajectories: dated surveys in at least two periods are needed.") else fmt(t, 4), f) })
-  output$dl_trends <- downloadHandler(function() paste0("reef_tool_trends_", Sys.Date(), ".csv"),
+  dl_handler("dl_trends", function() paste0("reef_tool_trends_", Sys.Date(), ".csv"),
                                       function(f) { t <- res()$trends$table
                                         write_with_header(res(), if (is.null(t)) data.frame(note = "Trends not requested.") else fmt(t, 4), f) })
   # ---- optional bleaching-event mode (v2.5.0) -------------------------------------
@@ -518,7 +562,7 @@ server <- function(input, output, session) {
   })
   output$evPlot <- renderPlot({ p <- plot_event_change(ev(), base_size = 14); req(p); p })
   output$evTable <- renderTable(fmt(ev()$sites, 1))
-  output$dl_event <- downloadHandler(function() paste0("reef_tool_event_", Sys.Date(), ".csv"), function(f) {
+  dl_handler("dl_event", function() paste0("reef_tool_event_", Sys.Date(), ".csv"), function(f) {
     e <- ev()
     writeLines(c(sprintf("# Reef Restoration Prioritisation Tool v%s, bleaching-event comparison, run %s", APP_VERSION, format(Sys.time(), "%Y-%m-%d %H:%M")),
                  paste0("# Phases: ", paste(sprintf("%s %s to %s", e$phases$phase, e$phases$from, e$phases$to), collapse = "; ")),
@@ -526,9 +570,9 @@ server <- function(input, output, session) {
     suppressWarnings(utils::write.table(e$sites, f, sep = ",", append = TRUE, row.names = FALSE, qmethod = "double"))
   })
 
-  output$dl_settings <- downloadHandler(function() paste0("reef_tool_settings_", Sys.Date(), ".csv"),
+  dl_handler("dl_settings", function() paste0("reef_tool_settings_", Sys.Date(), ".csv"),
                                         function(f) utils::write.csv(settings_table(current_settings(), current_weights()), f, row.names = FALSE))
-  output$dl_plot <- downloadHandler(function() paste0("reef_tool_decision_plane_", Sys.Date(), ".png"),
+  dl_handler("dl_plot", function() paste0("reef_tool_decision_plane_", Sys.Date(), ".png"),
                                     function(f) ggplot2::ggsave(f, plot_decision_plane(res(), base_size = 12), width = 8, height = 7, dpi = 300, bg = "white"))
 }
 
