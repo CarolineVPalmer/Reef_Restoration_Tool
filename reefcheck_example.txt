@@ -1,0 +1,42 @@
+    site depth_m n_transects coral  H CV_coral turf cca bleached disease
+1 Site A       5           4  0.41 NA     0.06   NA  NA     0.23    0.05
+2 Site B       5           4  0.36 NA     0.18   NA  NA     0.08    0.03
+3 Site C       5           4  0.20 NA     0.23   NA  NA     0.18    0.00
+4 Site D       5           4  0.05 NA     0.41   NA  NA     0.00    0.00
+5 Site E       5           4  0.32 NA     0.17   NA  NA     0.16    0.03
+6 Site F       5           4  0.03 NA     0.00   NA  NA     0.00    0.00
+7 Site G       5           4  0.29 NA     0.09   NA  NA     0.09    0.04
+8 Site H       5           4  0.19 NA     0.17   NA  NA     0.24    0.03
+  predation rubble sand PC1 feasibility feas_low feas_high urgency urg_low
+1        NA   0.06 0.08  NA        4.80     3.70      5.76    2.58   -0.96
+2        NA   0.07 0.08  NA        3.28     1.35      5.82   -1.88   -5.61
+3        NA   0.09 0.07  NA       -0.92    -2.29      1.46   -0.02   -3.81
+4        NA   0.09 0.06  NA       -4.37    -5.05     -2.23   -0.31   -3.08
+5        NA   0.11 0.07  NA        0.58    -0.67      2.31    0.17   -3.42
+6        NA   0.07 0.06  NA       -1.13    -2.72     -0.38   -4.04   -4.36
+7        NA   0.14 0.07  NA       -0.43    -0.87      1.02   -0.88   -4.42
+8        NA   0.09 0.09  NA       -1.82    -3.66      0.90    4.37   -1.24
+  urg_high                           class pathway class_support      alerts
+1     4.69           Immediate restoration       A          0.90            
+2     2.61         Proactive reinforcement       C          0.76            
+3     3.36                 Monitoring only       D          0.16            
+4     1.21                 Monitoring only       D          0.54 coral < 10%
+5     3.45           Immediate restoration       A          0.34            
+6    -2.18                 Monitoring only       D          1.00 coral < 10%
+7     1.79                 Monitoring only       D          0.30            
+8     7.83 Triage and foundational support       B          0.88            
+  borderline below_min trend_status trend_contribution
+1    Urgency     FALSE         used               0.19
+2    Urgency     FALSE         used              -1.19
+3  Both axes     FALSE         used               0.32
+4    Urgency     FALSE         used               1.37
+5  Both axes     FALSE         used              -1.18
+6         No     FALSE         used               0.75
+7  Both axes     FALSE         used              -1.02
+8  Both axes     FALSE         used               0.75
+Reef Check data were converted: each 20 m segment is treated as one transect (96 segments).
+Reef Check data: turf algae, crustose coralline algae (CCA), cyanobacteria and coral diversity are not recorded by this protocol, so they are not used, and the algal-dominance axis cannot be calculated. Classes rest mainly on coral cover, macroalgae, rubble, bleaching and disease. Turf-dominated sites may be rated too favourably, and class support can look higher than with fuller data without being more accurate (see the user guide).
+No coral taxon columns (Tot_*) found: coral diversity is not used.
+Recorded at half of the sites or fewer in the snapshot, so given no weight: Coral diversity (H'), Turf algae, Crustose coralline algae (CCA), Predation (colonies with scars).
+Trend adjustment used: 8 of the 8 scored sites have >= 3 survey periods spanning >= 365 days; the others get a neutral trend (0).
+PC1 not used: fewer than three sites with complete composition data, or too few varying variables.
