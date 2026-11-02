@@ -200,7 +200,14 @@ Files: `app.R` (interface), `analysis.R` (all calculations), `example_transects.
 - Deploy to Posit Connect Cloud; archive on Zenodo with the example files.
 - Optional: Spanish-language interface for managers in the Eastern Tropical Pacific.
 
-- Browser version: the bundled R packages are no longer published with the app, because GitHub Pages re-compresses them and the app could not start ("Can't download Emscripten filesystem image metadata"). Packages now load from the official webR repository.## 2.5.2 (19 October 2026)
+- Browser version: the bundled R packages are no longer published with the app, because GitHub Pages re-compresses them and the app could not start ("Can't download Emscripten filesystem image metadata"). Packages now load from the official webR repository.## 2.6.0 (2 November 2026)
+
+- **Reef Check data can be used directly** (`R/import_reefcheck.R`). The upload accepts Reef Check's Excel line-transect data sheets (several at once), a segment table (point counts per category per 20 m segment) or a point table (one code per point). Each segment becomes one transect. Hard coral (HC) becomes coral cover; nutrient indicator algae (NIA) macroalgae; rubble (RB) and sand (SD) as named; bleaching and disease are the share of hard-coral points marked HC/B or HC/D, or taken from the count rows of the sheet. Rock (RC) is never read as turf; rock with turf (RCTA) and rock with coralline algae (RCCA), where recorded, are used as turf and CCA.
+- A note on the Overview and in the method notes explains what Reef Check data cannot provide (turf, CCA, cyanobacteria, diversity, the algal-dominance axis) and that class support can look higher than with fuller data without being more accurate. Basis: the Isla del Caño data reduced to Reef Check categories kept 8 of 11 classes in the most recent period and 7 of 13 in December 2024 – February 2025.
+- Several files in the tool's own format can also be uploaded together.
+- Synthetic Reef Check example file and tests (`tests/testthat/test-reefcheck.R`). New dependency: readxl (for Excel sheets only).
+
+## 2.5.2 (19 October 2026)
 
 - Bleaching-event mode: new tick box "I have surveys before the event" (on by default). Untick it when monitoring began only once bleaching was under way; change is then measured from the surveys during the event to those after it. Before this, the app always used its "before" dates, which defaulted to the first three months of data and so could overlap the "during" surveys. Calculations are otherwise unchanged; older settings files load as before.
 

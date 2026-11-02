@@ -73,8 +73,10 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(width = 4,
       h4("1. Data"),
-      fileInput("datafile", "Upload transect CSV", accept = c(".csv", ".txt")),
-      downloadLink("dl_example", "Download an example file (synthetic data)"),
+      fileInput("datafile", "Upload transect data", multiple = TRUE, accept = c(".csv", ".txt", ".xlsx", ".xls")),
+      helpText("A CSV file in the tool's format, or Reef Check substrate data: their Excel data sheets (one per site, depth and date; select several at once), or a CSV with one row per segment."),
+      downloadLink("dl_example", "Download an example file (synthetic data)"), br(),
+      downloadLink("dl_example_rc", "Download a Reef Check example (synthetic data)"),
       checkboxInput("day_first", "Dates written day first (e.g. 25/01/2025)", TRUE),
       fileInput("load_settings", "Load saved settings (optional)", accept = ".csv"),
 
@@ -198,15 +200,22 @@ server <- function(input, output, session) {
   })
 
   # ---- data ---------------------------------------------------------------------
+  # v2.6.0: several files may be uploaded together, and Reef Check data (Excel
+  # data sheets, or segment or point tables) are converted to the tool's format
+  # (R/import_reefcheck.R). Files in the tool's own format are read as before.
   raw <- reactive({
     req(input$datafile)
-    tryCatch(read_transect_file(input$datafile$datapath),
+    tryCatch(import_transect_files(input$datafile$datapath, input$datafile$name),
              error = function(e) { showModal(modalDialog(title = "Could not read the file", conditionMessage(e), easyClose = TRUE)); NULL })
   })
   prep <- reactive({
     r <- raw(); req(r)
-    tryCatch(prepare_data(r, day_first = input$day_first),
-             error = function(e) { showModal(modalDialog(title = "Problem with the input file", conditionMessage(e), easyClose = TRUE)); NULL })
+    p <- tryCatch(prepare_data(r$df, day_first = input$day_first),
+                  error = function(e) { showModal(modalDialog(title = "Problem with the input file", conditionMessage(e), easyClose = TRUE)); NULL })
+    req(p)
+    p$messages <- c(r$messages, p$messages)
+    p$reefcheck <- r$reefcheck
+    p
   })
   loaded <- reactiveVal(NULL)
   # when a new file is read, set the date controls to its range
@@ -326,6 +335,7 @@ server <- function(input, output, session) {
                              paste0("<li>", htmltools::htmlEscape(al), "</li>", collapse = ""), "</ul>",
                              if (any(grepl("bleaching", al))) "<p class='note'>Where most sites are bleaching, treat the classes as interim and re-screen after the event.</p>" else "",
                              "</div>") else "",
+      if (isTRUE(prep()$reefcheck)) paste0("<div class='alert-box'><strong>Reef Check data</strong><p>", htmltools::htmlEscape(REEFCHECK_NOTE), "</p></div>") else "",
       "<p><strong>", nrow(s), "</strong> sites scored from <strong>", sum(s$n_transects), "</strong> transects. Snapshot: ", r$snapshot$description, ".</p>",
       "<p>Scores are <strong>relative to the sites analysed</strong>: zero is their average, not an absolute threshold.</p>",
       sprintf("<p>Feasibility\u2013Urgency correlation (Spearman \u03c1): <strong>%s</strong>. Some negative correlation is expected because both indices share core indicators with opposite signs.</p>",
@@ -439,6 +449,12 @@ server <- function(input, output, session) {
   })
 
   # ---- downloads -------------------------------------------------------------------
+  output$dl_example_rc <- downloadHandler(
+    filename = "example_reefcheck_segments_synthetic.csv",
+    content = function(f) {
+      src <- file.path("data", "example_reefcheck_segments.csv")
+      if (file.exists(src)) file.copy(src, f) else writeLines("The Reef Check example file was not found in the app folder.", f)
+    })
   output$dl_example <- downloadHandler(
     filename = "example_transects_synthetic.csv",
     content = function(f) {

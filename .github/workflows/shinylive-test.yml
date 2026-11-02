@@ -28,12 +28,12 @@ jobs:
           use-public-rspm: true
 
       - name: Install packages
-        run: Rscript -e 'install.packages(c("shiny", "ggplot2", "ggrepel", "shinylive"))'
+        run: Rscript -e 'install.packages(c("shiny", "ggplot2", "ggrepel", "readxl", "shinylive"))'
 
       - name: Assemble the app folder and export it for the browser
         run: |
           mkdir -p app/data
-          cp app.R app/ && cp -r R app/ && cp data/example_transects.csv app/data/
+          cp app.R app/ && cp -r R app/ && cp data/example_transects.csv data/example_reefcheck_segments.csv app/data/
           Rscript -e 'shinylive::export("app", "site"); cat("shinylive", as.character(packageVersion("shinylive")), "\n")' 2>&1 | tee export_log.txt
           du -sh site > site_size.txt; du -sh site/* >> site_size.txt; cat site_size.txt
 

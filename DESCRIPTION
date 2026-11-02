@@ -1,7 +1,7 @@
 Type: Project
 Package: reefrestorationtool
 Title: Reef Restoration Prioritisation Tool
-Version: 2.5.2
+Version: 2.6.0
 Description: R Shiny decision-support tool that converts routine coral reef
     transect data into relative restoration priorities (Feasibility, Urgency,
     management classes, donor shortlist) with bootstrap uncertainty and
@@ -9,6 +9,6 @@ Description: R Shiny decision-support tool that converts routine coral reef
     project is not an installable package.
 License: MIT + file LICENSE
 Depends: R (>= 4.3)
-Imports: shiny, ggplot2
+Imports: shiny, ggplot2, readxl
 Suggests: ggrepel, rstudioapi, testthat
 Encoding: UTF-8

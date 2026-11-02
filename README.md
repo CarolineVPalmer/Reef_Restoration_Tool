@@ -4,7 +4,7 @@ A free, point-and-click R Shiny tool that turns routine coral reef transect data
 
 The tool is a first-pass screening step before detailed site-suitability assessment. It is not a measure of restoration success and has not been validated against restoration outcomes.
 
-Version: 2.5.2 (see `CHANGES.md`). Manuscript: *An accessible reef management tool for prioritising coral restoration in data-limited and low-resource settings* [in preparation].
+Version: 2.6.0 (see `CHANGES.md`). Manuscript: *An accessible reef management tool for prioritising coral restoration in data-limited and low-resource settings* [in preparation].
 
 ## Use it in your browser
 
@@ -29,6 +29,10 @@ The tool runs entirely inside your web browser: nothing to install, and the data
 
 One row per transect (or photogrammetry plot). Required columns: `site` and `coral` (live coral cover). Recommended columns: `date` (or `year` and `month`); `turf`, `cca`, `cyanobacteria`, `macroalgae` and `rubble` cover; `bleached`, `disease` and `predation` (proportion of coral colonies affected); and colony counts per coral taxon in columns starting `Tot_` (for diversity). Optional columns: `rugosity`, `herbivores`, `depth` and `sand` (shown beside the results but not scored), and `method`. Cover and prevalence can be given as proportions or percentages. Comma- and semicolon-separated files are accepted.
 
+### Reef Check data (v2.6.0)
+
+The tool also reads Reef Check tropical substrate data: Reef Check's Excel line-transect data sheets (one file per site, depth and date; select several files at once), a CSV with one row per 20 m segment and the point counts of each category (`site`, `date`, `depth`, `segment`, `HC`, `SC`, `RKC`, `NIA`, `SP`, `RC`, `RB`, `SD`, `SI`, `OT`, and optionally `hc_bleached`, `hc_disease`), or a CSV with one row per point (`site`, `date`, `segment`, `code`). Each segment is treated as one transect. Reef Check does not record turf, crustose coralline algae, cyanobacteria or colonies by taxon, so these indicators and the algal-dominance axis are not used; rock (RC) is never read as turf. Where a programme splits rock into rock with turf (RCTA) and rock with coralline algae (RCCA), these are used as turf and CCA. Protected Reef Check sheets that will not open should be saved as .xlsx in Excel first. A synthetic example is in `data/example_reefcheck_segments.csv`.
+
 ## Repository structure
 
 ```
@@ -45,8 +49,11 @@ R/                        All calculations, one file per stage
   sensitivity.R           Weight sensitivity
   settings_io.R           Saving and reloading settings
   plots_tables.R          Figures, tables and formula text
+  event.R                 Optional bleaching-event comparison
+  import_reefcheck.R      Reading Reef Check data (v2.6.0)
 data/
   example_transects.csv   Synthetic example (no real sites)
+  example_reefcheck_segments.csv  Synthetic Reef Check example
   case_study/             Isla del Caño data and settings (not public yet; see below)
 scripts/
   reproduce_case_study.R  Re-runs the case study and checks it against the reference outputs

@@ -35,12 +35,12 @@ jobs:
           use-public-rspm: true
 
       - name: Install packages
-        run: Rscript -e 'install.packages(c("shiny", "ggplot2", "ggrepel", "shinylive"))'
+        run: Rscript -e 'install.packages(c("shiny", "ggplot2", "ggrepel", "readxl", "shinylive"))'
 
       - name: Build the in-browser app
         run: |
           mkdir -p app/data
-          cp app.R app/ && cp -r R app/ && cp data/example_transects.csv app/data/
+          cp app.R app/ && cp -r R app/ && cp data/example_transects.csv data/example_reefcheck_segments.csv app/data/
           Rscript -e 'shinylive::export("app", "site")'
           # GitHub Pages re-compresses the bundled R packages (.tgz) on the fly,
           # which stops webR from reading them ("Can't download Emscripten

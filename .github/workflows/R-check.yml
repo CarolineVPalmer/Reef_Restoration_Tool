@@ -20,7 +20,7 @@ jobs:
           use-public-rspm: true   # pre-built packages: faster installs
 
       - name: Install packages
-        run: Rscript -e 'install.packages(c("shiny", "ggplot2", "ggrepel", "testthat"))'
+        run: Rscript -e 'install.packages(c("shiny", "ggplot2", "ggrepel", "readxl", "testthat"))'
 
       - name: Check that every R file and the app parse
         run: |
