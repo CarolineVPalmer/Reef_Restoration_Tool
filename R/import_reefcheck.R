@@ -178,7 +178,7 @@ read_reefcheck_sheet <- function(path, file_name = basename(path)) {
   x <- matrix(clean_text(x), nrow = nrow(x))
   # value next to a label: first non-empty cell to its right that is not another label
   value_of <- function(pattern) {
-    hit <- which(grepl(pattern, x, ignore.case = TRUE), arr.ind = TRUE)
+    hit <- which(matrix(grepl(pattern, x, ignore.case = TRUE), nrow = nrow(x)), arr.ind = TRUE)
     if (!length(hit)) return(NA_character_)
     r <- hit[1, 1]; c0 <- hit[1, 2]
     if (c0 < ncol(x)) for (c in (c0 + 1):ncol(x)) {
