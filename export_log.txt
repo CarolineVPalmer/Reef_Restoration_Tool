@@ -1,0 +1,17 @@
+Downloading  29% ■■■■■■■■■■                        2s
+Downloading  74% ■■■■■■■■■■■■■■■■■■■■■■■           1s
+Downloading 100% ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■   0s
+
+✔ Updated metadata database: 6.82 MB in 10 files.
+
+ℹ Updating metadata database
+✔ Updating metadata database ... done
+
+Warning messages:
+1: In find.package(pkgs, lib.loc = NULL, quiet = FALSE, !is_quiet()) :
+  there is no package called ‘rstudioapi’
+2: Package version mismatch for readxl, ensure the versions below are compatible.
+! Installed version: 1.6.0, WebAssembly version: 1.5.0.1.
+ℹ Install a package version matching the WebAssembly version to silence this
+  error. 
+shinylive 0.5.0 
