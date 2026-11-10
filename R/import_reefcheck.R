@@ -14,7 +14,9 @@
 #      .xls; one file per site, depth and date; several files may be uploaded);
 #   2. a segment table: one row per segment with the point counts (or
 #      percentages) of each category;
-#   3. a point table: one row per point with its category code.
+#   3. a point table: one row per point with its category code;
+#   4. the substrate export of Reef Check's database (v2.6.2): one row per
+#      survey, segment and code, with the count in `total`.
 #
 # What is lost (tested on the Isla del Cano data; see the design record for
 # v2.6.0): Reef Check does not separate turf or crustose coralline algae (both
@@ -28,7 +30,8 @@
 #' Reef Check tropical substrate codes and their meaning.
 REEFCHECK_CODES <- c(HC = "hard coral", SC = "soft coral", RKC = "recently killed coral",
                      NIA = "nutrient indicator algae", SP = "sponge", RC = "rock",
-                     RB = "rubble", SD = "sand", SI = "silt/clay", OT = "other")
+                     RB = "rubble", SD = "sand", SI = "silt/clay", OT = "other",
+                     FS = "fleshy seaweed")   # in recent database exports; read as macroalgae with NIA [verify with Reef Check]
 # Sub-categories used by some programmes (e.g. Reef Check Australia), mapped to
 # the main code for totals and, where informative, to the tool's variables.
 REEFCHECK_SUBCODES <- c(RCTA = "RC", RCCA = "RC", RKCTA = "RKC", RKCNIA = "RKC")
@@ -93,7 +96,7 @@ reefcheck_counts_to_transects <- function(counts) {
   out$transect <- if ("transect" %in% names(counts)) as.character(counts$transect)[keep] else seq_len(sum(keep))
   out$method <- "reef check"
   out$coral      <- p(main[, "HC"])
-  out$macroalgae <- p(main[, "NIA"])
+  out$macroalgae <- p(main[, "NIA"] + main[, "FS"])
   out$rubble     <- p(main[, "RB"])
   out$sand       <- p(main[, "SD"])
   # Rock (RC) is never read as turf: it also includes bare rock and coralline algae.
@@ -122,6 +125,7 @@ reefcheck_counts_to_transects <- function(counts) {
 reefcheck_table_type <- function(df) {
   low <- toupper(clean_text(names(df)))
   if ("CORAL" %in% low) return(NA_character_)     # the tool's own format
+  if (all(c("SUBSTRATE_CODE", "SEGMENT_CODE", "TOTAL") %in% low)) return("export")
   if (sum(low %in% c(names(REEFCHECK_CODES), names(REEFCHECK_SUBCODES))) >= 3 && "SITE" %in% low) return("segments")
   if (all(c("SITE", "CODE") %in% low)) return("points")
   NA_character_
@@ -130,9 +134,10 @@ reefcheck_table_type <- function(df) {
 #' Convert a Reef Check segment or point table to the tool's transect format.
 #'
 #' @param df Data frame read from a CSV file.
-#' @param type `"segments"` or `"points"` (from `reefcheck_table_type()`).
+#' @param type `"segments"`, `"points"` or `"export"` (from `reefcheck_table_type()`).
 #' @return Data frame in the tool's format, with attribute `messages`.
 reefcheck_table_to_transects <- function(df, type) {
+  if (type == "export") return(reefcheck_export_to_transects(df))
   names(df) <- clean_text(names(df))
   up <- toupper(names(df))
   std <- c(SITE = "site", DATE = "date", DEPTH = "depth", SEGMENT = "transect", TRANSECT = "transect",
@@ -269,4 +274,57 @@ import_transect_files <- function(paths, names = basename(paths)) {
       msgs <- c(msgs, "Some sites were surveyed at more than one depth; depths are pooled within each site. To compare depths, give each depth its own site name.")
   }
   list(df = df, messages = msgs, reefcheck = rc)
+}
+
+#' Convert Reef Check's database substrate export to the tool's transect format.
+#'
+#' The export has one row per survey, segment (S1-S4) and substrate code, with the point count in `total`. Hard-coral
+#' points recorded as bleached (HC/B) or diseased (HC/D) are separate points, so coral cover is HC + HC/B + HC/D and
+#' bleaching and disease are their share of all hard-coral points. Soft coral (SC) is not counted as coral. Rows
+#' without data ("No data", usually where Reef Check flagged errors) are left out, and so are segments with no points.
+#' Collector names and the other descriptive columns are not carried over.
+#'
+#' @param df Data frame read from the export (`Substrate.csv`).
+#' @return Data frame in the tool's format (one row per segment), with attribute `messages`.
+reefcheck_export_to_transects <- function(df) {
+  low <- tolower(clean_text(names(df)))
+  col <- function(...) { k <- which(low %in% c(...))[1]; if (is.na(k)) NULL else df[[k]] }
+  site <- col("reef_name", "site", "site_name")
+  if (is.null(site)) stop("The Reef Check export has no reef_name column.")
+  date_raw <- clean_text(col("date"))
+  # dates such as "22-February-10": month names in English, read in the C locale
+  old <- Sys.getlocale("LC_TIME"); on.exit(Sys.setlocale("LC_TIME", old), add = TRUE)
+  invisible(Sys.setlocale("LC_TIME", "C"))
+  d <- as.Date(date_raw, "%d-%B-%y")
+  d[is.na(d)] <- as.Date(date_raw[is.na(d)], "%d-%b-%y")
+  date <- ifelse(is.na(d), date_raw, format(d))
+  depth <- to_number(col("depth (m)", "depth"))
+  survey <- col("survey_id"); if (is.null(survey)) survey <- paste(site, date, depth)
+  seg <- toupper(clean_text(col("segment_code")))
+  code <- toupper(gsub("\\s", "", clean_text(col("substrate_code"))))
+  n <- suppressWarnings(as.numeric(col("total")))
+  keep <- !is.na(n)
+  msgs <- character(0)
+  if (any(!keep)) msgs <- c(msgs, sprintf("%d export rows had no data (most flagged by Reef Check as errors) and were left out.", sum(!keep)))
+  unknown <- setdiff(unique(code[keep]), c(names(REEFCHECK_CODES), "HC/B", "HC/D", names(REEFCHECK_SUBCODES)))
+  if (length(unknown)) msgs <- c(msgs, paste("Codes not recognised and left out:", paste(unknown, collapse = ", ")))
+  key <- paste(survey, seg, sep = "\r")[keep]
+  k <- unique(key)
+  first <- match(k, key)
+  ids <- data.frame(site = clean_text(site[keep][first]), date = date[keep][first], depth = depth[keep][first],
+                    transect = paste(clean_text(survey[keep][first]), seg[keep][first]), stringsAsFactors = FALSE)
+  tab <- function(codes) as.numeric(tapply(ifelse(code[keep] %in% codes, n[keep], 0), factor(key, levels = k), sum))
+  for (cd in setdiff(names(REEFCHECK_CODES), "HC")) ids[[cd]] <- tab(cd)
+  for (cd in names(REEFCHECK_SUBCODES)) if (any(code[keep] == cd)) ids[[cd]] <- tab(cd)
+  ids$HC <- tab(c("HC", "HC/B", "HC/D"))
+  ids$hc_bleached <- tab("HC/B"); ids$hc_disease <- tab("HC/D")
+  out <- reefcheck_counts_to_transects(ids)
+  # surveys from several years or countries: classes compare all sites in one snapshot
+  yrs <- range(as.integer(substr(ids$date, 1, 4)), na.rm = TRUE)
+  ctry <- unique(clean_text(col("country")))
+  if (length(ctry) > 1 || (all(is.finite(yrs)) && diff(yrs) > 2))
+    msgs <- c(msgs, sprintf("This export covers %s and the years %d-%d. Classes compare the sites in one snapshot, so compare sites from one reef system surveyed at about the same time; choose the survey window under 'Which surveys to use'.",
+                            if (length(ctry) > 1) paste(length(ctry), "countries") else "one country", yrs[1], yrs[2]))
+  attr(out, "messages") <- c(msgs, attr(out, "messages"))
+  out
 }

@@ -1,5 +1,11 @@
 # Changes
 
+## Version 2.6.2 (10 November 2026)
+
+- **Reef Check database exports are read directly.** The substrate export (`Substrate.csv`: one row per survey, 20 m segment and code, with the count in `total`) is recognised and converted without manual reformatting. Hard coral includes points recorded as bleached (HC/B) or diseased (HC/D); soft coral (SC) is not counted as coral. Rows without data, which Reef Check flags as errors, are left out and reported. Collector names are not carried over.
+- The code FS (fleshy seaweed), which appears in recent exports, is read as macroalgae together with NIA [to confirm with Reef Check].
+- When an upload covers several countries or more than two years, a note explains that classes compare all sites in one snapshot and suggests choosing a survey window.
+
 ## Version 2.6.1 (2 November 2026)
 
 - **Bug fix: downloads did not work in the browser version.** Every download (example files, results, decision plane, settings, donors, sensitivity, trends, trajectories, event results) was cancelled, because Shiny's download links need a server, which the in-browser version does not have. Files are now built in the page from data sent by R, which works in the browser and in RStudio.

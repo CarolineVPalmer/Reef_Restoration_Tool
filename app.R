@@ -353,7 +353,7 @@ server <- function(input, output, session) {
     "<code>macroalgae</code>, <code>bleached</code>, <code>disease</code>, <code>predation</code> (proportion of colonies affected) ",
     "and coral colony counts per taxon in columns starting <code>Tot_</code> (for diversity). Optional: <code>depth</code> (shown beside the results, not scored), <code>rubble</code>, ",
     "<code>rugosity</code>, <code>herbivores</code>, <code>sand</code> (shown, not scored), <code>method</code> (e.g. transect or photogrammetry; used only to warn when methods are mixed). One row per transect or photogrammetry plot. Cover can be 0\u20131 or 0\u2013100. Comma- or semicolon-separated files are accepted.</p>",
-    "<h4>Reef Check data</h4><p>Teams using the Reef Check protocol can upload their substrate data directly: Reef Check's Excel ",
+    "<h4>Reef Check data</h4><p>Teams using the Reef Check protocol can upload their substrate data directly: the substrate export from Reef Check's database (Substrate.csv), Reef Check's Excel ",
     "line-transect data sheets (one per site, depth and date; select several at once and save them as .xlsx first), or a CSV with one row per 20 m segment ",
     "(<code>site</code>, <code>date</code>, <code>segment</code> and the point counts <code>HC</code>, <code>NIA</code>, <code>RC</code>, <code>RB</code>, <code>SD</code> …; ",
     "optionally <code>hc_bleached</code> and <code>hc_disease</code>). Each segment is treated as a transect. Reef Check does not record turf, crustose coralline algae ",

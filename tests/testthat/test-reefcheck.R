@@ -80,3 +80,18 @@ test_that("several files in the tool's format are combined", {
   expect_false(imp$reefcheck)
   expect_equal(nrow(imp$df), 2 * nrow(read_transect_file(example_path)))
 })
+
+test_that("Reef Check's database export is read: HC/B and HC/D count as coral, soft coral does not", {
+  imp <- import_transect_files(fixture("reefcheck_export_substrate.csv"))
+  expect_true(imp$reefcheck)
+  d <- imp$df
+  expect_equal(nrow(d), 15)                       # 16 segments, one without data
+  expect_equal(unique(as.Date(d$date)), as.Date("2025-03-14"))
+  r1 <- d[d$site == "Reef One", ][1, ]
+  raw <- read.csv(fixture("reefcheck_export_substrate.csv"), check.names = FALSE)
+  s1 <- raw[raw$reef_name == "Reef One" & raw$segment_code == "S1", ]
+  hc <- sum(as.numeric(s1$total[s1$substrate_code %in% c("HC", "HC/B", "HC/D")]))
+  expect_equal(r1$coral, hc / 40)                 # SC not included
+  expect_equal(r1$bleached, 2 / hc)
+  expect_true(any(grepl("no data", imp$messages)))
+})
