@@ -1,0 +1,94 @@
+analysis: ..............
+event: ..................
+helpers: ...................................
+reefcheck: ..........................................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+🎸 Your tests rock 🎸
+               file
+1   test-analysis.R
+2   test-analysis.R
+3      test-event.R
+4      test-event.R
+5      test-event.R
+6      test-event.R
+7      test-event.R
+8      test-event.R
+9    test-helpers.R
+10   test-helpers.R
+11   test-helpers.R
+12   test-helpers.R
+13   test-helpers.R
+14   test-helpers.R
+15   test-helpers.R
+16   test-helpers.R
+17   test-helpers.R
+18   test-helpers.R
+19 test-reefcheck.R
+20 test-reefcheck.R
+21 test-reefcheck.R
+22 test-reefcheck.R
+23 test-reefcheck.R
+24 test-reefcheck.R
+25 test-reefcheck.R
+26 test-reefcheck.R
+27 test-reefcheck.R
+28 test-reefcheck.R
+                                                                                      test
+1                            the example file runs and gives coherent, reproducible output
+2                                            a saved settings file reproduces the settings
+3                      event comparison reports the change from before to the latest phase
+4                             event comparison needs 'before' and at least one later phase
+5                                    the standard analysis is unaffected by event settings
+6                                                    event settings are saved and reloaded
+7       without 'before', change is measured from 'during' and flagged as an underestimate
+8           'before' can be switched off even when its dates are filled in (as in the app)
+9                                zscore standardises and treats missing values as the mean
+10               shannon gives log(k) for k equally common taxa and NA for empty transects
+11                     survey periods run Mar-May, Jun-Aug, Sep-Nov and Dec-Feb by default
+12                                     classes follow the signs of Feasibility and Urgency
+13                          dates are read day first and implausible readings are rejected
+14                            numbers with decimal commas and missing-value codes are read
+15                                             month names are read in English and Spanish
+16                default weights are within their allowed ranges and directions are fixed
+17                                     CCA is not part of the algal-dominance PCA (v2.4.0)
+18                                             presets change weights but never directions
+19                         point codes are split into category and bleaching/disease flags
+20                       segment counts become proportions, and rock is never read as turf
+21                   rock with turf and rock with coralline algae are used as turf and CCA
+22                                                 segments without 40 points are reported
+23                               the tool's own files are not mistaken for Reef Check data
+24                                                    a point table is counted per segment
+25   a Reef Check Excel data sheet is read, including the bleaching and disease count rows
+26          the full analysis runs on Reef Check data, without turf, CCA, diversity or PC1
+27                                         several files in the tool's format are combined
+28 Reef Check's database export is read: HC/B and HC/D count as coral, soft coral does not
+   nb failed error
+1  11      0 FALSE
+2   3      0 FALSE
+3   6      0 FALSE
+4   2      0 FALSE
+5   1      0 FALSE
+6   3      0 FALSE
+7   4      0 FALSE
+8   2      0 FALSE
+9   4      0 FALSE
+10  2      0 FALSE
+11  2      0 FALSE
+12  2      0 FALSE
+13  3      0 FALSE
+14  1      0 FALSE
+15  1      0 FALSE
+16  3      0 FALSE
+17  4      0 FALSE
+18 13      0 FALSE
+19  4      0 FALSE
+20  7      0 FALSE
+21  2      0 FALSE
+22  2      0 FALSE
+23  3      0 FALSE
+24  6      0 FALSE
+25  6      0 FALSE
+26  4      0 FALSE
+27  2      0 FALSE
+28  6      0 FALSE
