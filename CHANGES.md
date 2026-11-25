@@ -1,5 +1,9 @@
 # Changes
 
+## Version 2.7.1 (25 November 2026)
+
+- **Class labels and text revised by Lucy** (design record: `docs/design_decisions_v2.7.1.md`). A Restoration priority (was Assess for active restoration); B Address barriers to recovery (unchanged); C Protection and maintenance (was Protect and maintain); D Monitoring and reassessment (was Monitor and reassess). The on-screen summaries and full descriptions are Lucy's, with the references moved to the paper (Table S2) and the links to the alerts kept from 2.7.0. Class A's description states that a priority according to the monitoring data does not confirm that a site is suitable for restoration. Letters, boundaries, colours and all results are unchanged.
+
 ## Version 2.7.0 (25 November 2026)
 
 - **Management classes renamed and reworded** (design record: `docs/design_decisions_v2.7.0.md`). A Assess for active restoration (was Immediate restoration); B Address barriers to recovery (was Triage and foundational support); C Protect and maintain (was Proactive reinforcement); D Monitor and reassess (was Monitoring only). Letters, boundaries, colours and all results are unchanged.

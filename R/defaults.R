@@ -7,7 +7,7 @@
 # Moved verbatim from analysis.R (v2.3.0); roxygen headers added.
 # =============================================================================
 
-APP_VERSION <- "2.7.0"
+APP_VERSION <- "2.7.1"
 
 # -----------------------------------------------------------------------------
 # 1. Defaults
@@ -142,49 +142,59 @@ FLAG_RULES <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# Management classes (v2.7.0). Labels and wording were revised with Lucy and
-# Chris: "Immediate restoration" overstated what a relative class A supports
-# (and contradicted the severe-bleaching alert, which says to hold outplanting),
-# and "Triage" can read as abandoning a site. Letters stay tied to the same
-# quadrants as before, so earlier results keep their meaning.
+# Management classes (v2.7.1). Labels and text by Lucy, agreed with Caroline
+# and Chris (25 November 2026), revising v2.7.0. "Restoration priority" means a
+# priority according to the monitoring data, not a judgement that a site is
+# suitable for restoration; the description says so. Letters stay tied to the
+# same quadrants as before, so earlier results keep their meaning. The
+# references behind each description are in the paper (Table S2), not the app.
 #   class          short label shown in tables, plots and exports
 #   pathway        letter A-D (quadrant)
-#   recommendation one-line summary (kept under this name so exports and
+#   recommendation on-screen summary (kept under this name so exports and
 #                  settings from earlier versions still line up)
-#   description    full guidance shown in the app's help text and Table S2
+#   description    full guidance shown under "What each class means"
 CLASSES <- data.frame(
-  class = c("Assess for active restoration", "Address barriers to recovery", "Protect and maintain", "Monitor and reassess"),
+  class = c("Restoration priority", "Address barriers to recovery", "Protection and maintenance", "Monitoring and reassessment"),
   pathway = c("A", "B", "C", "D"),
   recommendation = c(
-    "Conditions appear relatively favourable but pressure is relatively high: assess the site in detail before any active restoration.",
-    "Conditions appear relatively less favourable and pressure is relatively high: identify and reduce what limits natural recovery first.",
-    "Conditions appear relatively favourable and pressure is relatively low: maintain them, monitor, and consider the site as a donor or nursery source.",
-    "Conditions appear relatively less favourable but pressure is relatively low: a lower priority for immediate restoration; monitor and reassess."),
+    paste("Relatively favourable ecological conditions but comparatively high pressures. Prioritise detailed site-suitability",
+          "assessment to determine whether active restoration is appropriate and whether existing pressures can be managed."),
+    paste("Relatively unfavourable ecological conditions and comparatively high pressures. Prioritise identifying and addressing",
+          "factors limiting reef recovery before considering active coral restoration."),
+    paste("Relatively favourable ecological conditions and comparatively low pressures. Prioritise maintaining reef condition",
+          "through protection and continued monitoring, with potential for donor-site assessment where appropriate."),
+    paste("Relatively unfavourable ecological conditions but comparatively low pressures. Prioritise continued monitoring and",
+          "reassessment to establish whether natural recovery is occurring or further management is required.")),
   description = c(
-    paste("Ecological conditions appear relatively favourable for active restoration, although the site is under relatively high pressure.",
-          "A detailed site-suitability assessment is needed to identify the factors that may limit recovery, such as substrate condition,",
-          "algal competition and the likelihood of further disturbance, and to determine whether these pressures can be reduced or managed.",
-          "A high Feasibility score does not guarantee restoration success, and monitoring, management of the underlying pressures or",
-          "alternative interventions may be needed before active restoration is undertaken.",
-          "Where the severe-bleaching alert is shown, outplanting should wait until bleaching has subsided."),
-    paste("Ecological conditions appear relatively less favourable for restoration, and the site is under relatively high pressure.",
-          "Identifying and addressing the factors that may limit natural recovery should come before any active restoration.",
-          "A site assessment should look for barriers such as unstable substrate, algal competition, reduced herbivory or continuing",
-          "disturbance, and management should focus on reducing these stressors so that natural recovery becomes more likely.",
-          "Continued monitoring and reassessment will show whether conditions improve and natural recovery begins, or whether active",
-          "restoration becomes appropriate. Where the rubble alert (above 30%) is shown, stabilising the substrate is likely to be the first step."),
-    paste("Ecological conditions appear relatively favourable and the site is under comparatively low pressure.",
-          "The priority is to maintain these conditions, with continued monitoring to detect any change in reef condition.",
-          "Active restoration may not be necessary while the reef maintains its current condition or recovers naturally.",
-          "The site may be a suitable source of donor corals or nursery material, subject to an assessment of coral health, abundance,",
-          "genetic diversity and the likely impact of collection; the donor shortlist in this tool is a starting point for that assessment."),
-    paste("Ecological conditions appear relatively less favourable for restoration, although the site is under relatively low pressure.",
-          "Where resources are limited, these sites are a lower priority for immediate restoration.",
-          "Lower relative pressure does not mean that recovery is under way: a site where coral has already collapsed can score low on",
-          "Urgency because little coral remains to bleach or become diseased. Where the coral-cover alert (below 10%) is shown, natural",
-          "recovery is unlikely, and further assessment of the factors limiting recovery is advisable. Reassessment is appropriate where",
-          "there is evidence of further degradation, emerging pressures or changes in reef condition that could justify additional",
-          "management or restoration.")),
+    paste("Sites in this class show relatively favourable ecological conditions but are under comparatively high pressure.",
+          "They may offer opportunities for active restoration, provided that the factors that could limit recovery can be",
+          "identified and managed. Restoration outcomes depend strongly on conditions at the site, so a detailed site-suitability",
+          "assessment is needed before intervening, considering substrate stability, algal competition, coral health,",
+          "environmental conditions and exposure to future disturbance. Where pressures are not addressed, active restoration may",
+          "bring little long-term benefit. A site is a priority here according to the monitoring data; a high relative Feasibility",
+          "score does not confirm that it is suitable for restoration, and management of the underlying pressures may be needed",
+          "before or alongside restoration. Where the severe-bleaching alert is shown, outplanting should wait until bleaching has subsided."),
+    paste("Sites in this class show relatively unfavourable ecological conditions and comparatively high pressure. Management",
+          "should first identify and address the factors limiting reef recovery, rather than outplant corals into conditions",
+          "that may not support them. The right intervention depends on the limitation: unstable rubble may need stabilising so",
+          "that corals can settle and establish, and algal dominance linked to reduced herbivory may need algal control or the",
+          "restoration of grazing. Where local pressures contribute to degradation, management should aim to reduce them.",
+          "Where the rubble alert (above 30%) is shown, stabilising the substrate is likely to be the first step. Continued",
+          "monitoring will show whether conditions improve, natural recovery occurs or further intervention is needed."),
+    paste("Sites in this class show relatively favourable ecological conditions and comparatively low pressure. Management",
+          "should focus on maintaining current condition and supporting the reef's resistance and resilience through protection,",
+          "management of local threats and continued monitoring. Active restoration may not be necessary where a reef keeps its",
+          "ecological function or recovers naturally. These sites may also be sources of donor corals or nursery material.",
+          "Donor selection should consider coral health, abundance, species composition, genetic diversity, compatibility with",
+          "recipient sites and the likely impact of removing coral. The donor shortlist in this tool identifies candidate sites",
+          "for further investigation; it does not confirm that they are suitable for collection."),
+    paste("Sites in this class show relatively unfavourable ecological conditions but comparatively low recorded pressure.",
+          "Where resources are limited, they may be a lower priority for immediate active restoration while monitoring continues.",
+          "Lower recorded pressure does not necessarily mean that natural recovery is under way: recovery may be held back by",
+          "limited larval supply, earlier disturbances or conditions that routine monitoring does not capture. Where the",
+          "coral-cover alert (below 10%) is shown, natural recovery is unlikely. Where possible, further assessment should look",
+          "for barriers to recovery; evidence of continued degradation, limited recovery or new pressures may justify revisiting",
+          "priorities and considering other interventions.")),
   stringsAsFactors = FALSE
 )
 
