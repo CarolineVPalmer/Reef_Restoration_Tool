@@ -95,7 +95,7 @@ See `CITATION.cff`. [Add the manuscript reference and the Zenodo DOI after relea
 
 ## Use of AI assistance
 
-The code, tests and documentation were developed with assistance from Claude (Anthropic), an AI model. All design decisions were made by the author, and the code and its outputs were checked by the author; the changes are recorded in `CHANGES.md` and the design records in `docs/`. Earlier commits in this repository are labelled with Claude as author.
+The code, tests and documentation were developed with assistance from Claude (Anthropic), an AI model. All design decisions were made by the author, and the code and its outputs were checked by the author; the changes are recorded in `CHANGES.md` and the design records in `docs/`. Development before the first public release (October 2026) took place in a private repository.
 
 ## Licence
 
