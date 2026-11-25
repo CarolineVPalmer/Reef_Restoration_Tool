@@ -14,6 +14,26 @@ authors:
     orcid: "https://orcid.org/0000-0002-5903-995X"
   # - family-names: [Co-author]
   #   given-names: [Name]
+abstract: >-
+  The Reef Restoration Prioritisation Tool is a free, open-source R Shiny
+  application that turns routine benthic transect surveys into relative,
+  site-level restoration priorities for reef managers working with limited
+  data and resources. For each site it calculates a Feasibility index
+  (relative ecological condition) and an Urgency index (relative pressure),
+  places the sites on a decision plane and assigns each to one of four
+  management classes with a suggested intervention pathway: A, Assess for
+  active restoration; B, Address barriers to recovery; C, Protect and
+  maintain; D, Monitor and reassess. Absolute alerts flag coral cover below
+  10%, severe bleaching and extensive rubble. The tool reports bootstrap
+  uncertainty for every score and class, tests how far the classes depend
+  on the indicator weights, produces a donor-site shortlist, and can add
+  trends from repeated surveys. It accepts a single CSV file or Reef Check
+  substrate data, runs in a web browser or locally in R, and saves a
+  settings file so that each analysis can be repeated. It is intended as a
+  first-pass screening step to support expert and stakeholder decisions,
+  not as a measure of restoration success or a forecast of coral loss. It
+  was developed with monitoring data from Isla del Caño Biological Reserve,
+  Costa Rica.
 keywords:
   - coral reef
   - restoration
