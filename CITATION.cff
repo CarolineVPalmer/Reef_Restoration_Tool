@@ -1,17 +1,17 @@
 # Citation metadata (Citation File Format). Zenodo reads this file when a
-# GitHub release is archived. Fill in the [bracketed] fields before release.
+# GitHub release is archived. The release date is taken from the GitHub
+# release; add the Zenodo concept DOI below after the first release.
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Reef Restoration Prioritisation Tool"
 version: 2.7.0
-date-released: "[YYYY-MM-DD]"
 license: MIT
 type: software
 authors:
-  - family-names: "[Surname]"
-    given-names: Caroline
-    affiliation: "University of Plymouth"
-    orcid: "https://orcid.org/[0000-0000-0000-0000]"
+  - family-names: "Palmer"
+    given-names: "Caroline V."
+    affiliation: "Independent Researcher"
+    orcid: "https://orcid.org/0000-0002-5903-995X"
   # - family-names: [Co-author]
   #   given-names: [Name]
 keywords:
