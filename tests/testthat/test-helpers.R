@@ -23,12 +23,12 @@ test_that("survey periods run Mar-May, Jun-Aug, Sep-Nov and Dec-Feb by default",
 
 test_that("classes follow the signs of Feasibility and Urgency", {
   expect_equal(classify(c(1, -1, 1, -1), c(1, 1, -1, -1)),
-               c("Assess for active restoration", "Address barriers to recovery",
-                 "Protect and maintain", "Monitor and reassess"))
-  expect_equal(classify(0, 0), "Assess for active restoration")   # zero goes to the higher class
+               c("Restoration priority", "Address barriers to recovery",
+                 "Protection and maintenance", "Monitoring and reassessment"))
+  expect_equal(classify(0, 0), "Restoration priority")   # zero goes to the higher class
 })
 
-test_that("every class has a letter, colour, summary and description (v2.7.0)", {
+test_that("every class has a letter, colour, summary and description (v2.7.0, v2.7.1)", {
   expect_equal(CLASSES$pathway, c("A", "B", "C", "D"))
   expect_true(all(CLASSES$pathway %in% names(CLASS_COLOURS)))
   expect_equal(names(class_colours()), CLASSES$class)

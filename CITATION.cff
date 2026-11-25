@@ -4,7 +4,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Reef Restoration Prioritisation Tool"
-version: 2.7.0
+version: 2.7.1
 license: MIT
 type: software
 authors:
@@ -21,9 +21,9 @@ abstract: >-
   data and resources. For each site it calculates a Feasibility index
   (relative ecological condition) and an Urgency index (relative pressure),
   places the sites on a decision plane and assigns each to one of four
-  management classes with a suggested intervention pathway: A, Assess for
-  active restoration; B, Address barriers to recovery; C, Protect and
-  maintain; D, Monitor and reassess. Absolute alerts flag coral cover below
+  management classes with a suggested intervention pathway: A,
+  Restoration priority; B, Address barriers to recovery; C, Protection and
+  maintenance; D, Monitoring and reassessment. Absolute alerts flag coral cover below
   10%, severe bleaching and extensive rubble. The tool reports bootstrap
   uncertainty for every score and class, tests how far the classes depend
   on the indicator weights, produces a donor-site shortlist, and can add
