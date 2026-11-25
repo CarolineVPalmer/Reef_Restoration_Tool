@@ -23,9 +23,17 @@ test_that("survey periods run Mar-May, Jun-Aug, Sep-Nov and Dec-Feb by default",
 
 test_that("classes follow the signs of Feasibility and Urgency", {
   expect_equal(classify(c(1, -1, 1, -1), c(1, 1, -1, -1)),
-               c("Immediate restoration", "Triage and foundational support",
-                 "Proactive reinforcement", "Monitoring only"))
-  expect_equal(classify(0, 0), "Immediate restoration")   # zero goes to the higher class
+               c("Assess for active restoration", "Address barriers to recovery",
+                 "Protect and maintain", "Monitor and reassess"))
+  expect_equal(classify(0, 0), "Assess for active restoration")   # zero goes to the higher class
+})
+
+test_that("every class has a letter, colour, summary and description (v2.7.0)", {
+  expect_equal(CLASSES$pathway, c("A", "B", "C", "D"))
+  expect_true(all(CLASSES$pathway %in% names(CLASS_COLOURS)))
+  expect_equal(names(class_colours()), CLASSES$class)
+  expect_true(all(nzchar(CLASSES$recommendation)) && all(nzchar(CLASSES$description)))
+  expect_false(any(grepl("?", CLASSES$class, fixed = TRUE)))   # labels are not questions
 })
 
 test_that("dates are read day first and implausible readings are rejected", {

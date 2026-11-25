@@ -397,13 +397,19 @@ server <- function(input, output, session) {
     "<p><strong>Reading the plot.</strong> Zero lines are the average of the sites analysed. Bars are 95% bootstrap intervals: ",
     "transects were resampled within all sites and the whole calculation repeated, so the bars include uncertainty in the zero lines. ",
     "Where a bar crosses zero, the class is borderline: collect more data or stage actions. Open circles: fewer transects than the minimum.</p>",
-    paste0("<p><strong>", CLASSES$pathway, ". ", CLASSES$class, ":</strong> ", CLASSES$recommendation, "</p>", collapse = ""))))
+    paste0("<p><strong>", CLASSES$pathway, ". ", CLASSES$class, ":</strong> ", CLASSES$recommendation, "</p>", collapse = ""),
+    "<p>Full guidance for each class is on the Recommendations tab.</p>")))
 
   output$scoreTable <- renderTable({
     t <- fmt(site_table(res())); t$class_support <- pct(t$class_support); t
   }, digits = 2)
+  # Full class guidance (v2.7.0) sits above the table, in a collapsible block
+  # so the table stays visible on a phone.
   output$recNote <- renderUI(HTML(paste0("<p class='note'>Pathways follow from each site's class (relative to the other sites). ",
-    "Alerts are absolute: ", paste(sprintf("<strong>%s</strong>: %s", FLAG_RULES$short, htmltools::htmlEscape(FLAG_RULES$meaning)), collapse = " "), "</p>")))
+    "Alerts are absolute: ", paste(sprintf("<strong>%s</strong>: %s", FLAG_RULES$short, htmltools::htmlEscape(FLAG_RULES$meaning)), collapse = " "), "</p>",
+    "<details><summary><strong>What each class means</strong></summary><p><em>", htmltools::htmlEscape(CLASS_INTRO), "</em></p>",
+    paste0("<p><strong>", CLASSES$pathway, ". ", CLASSES$class, ".</strong> ", htmltools::htmlEscape(CLASSES$description), "</p>", collapse = ""),
+    "</details>")))
   output$recommendationTable <- renderTable({
     s <- res()$sites
     data.frame(site = s$site, depth_m = s$depth_m, pathway = s$pathway, class = s$class, class_support = pct(s$class_support),
@@ -483,8 +489,8 @@ server <- function(input, output, session) {
   output$methodsText <- renderUI({
     r <- res()
     HTML(paste0("<h4>Formulas used in this run</h4>", paste0("<p>", htmltools::htmlEscape(methods_text(r)), "</p>", collapse = ""),
-                "<p>Classes: A Immediate restoration (Feasibility \u2265 0, Urgency \u2265 0); B Triage and foundational support (Feasibility < 0, Urgency \u2265 0); ",
-                "C Proactive reinforcement (Feasibility \u2265 0, Urgency < 0); D Monitoring only (both < 0).</p>"))
+                sprintf("<p>Classes: A %s (Feasibility \u2265 0, Urgency \u2265 0); B %s (Feasibility < 0, Urgency \u2265 0); C %s (Feasibility \u2265 0, Urgency < 0); D %s (both < 0).</p>",
+                        CLASSES$class[1], CLASSES$class[2], CLASSES$class[3], CLASSES$class[4])))
   })
   output$weightsTable <- renderTable({
     w <- res()$weights_used; wr <- res()$weights_requested

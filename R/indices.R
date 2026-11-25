@@ -119,9 +119,10 @@ index_from_z <- function(Z, wv) as.vector(Z[, names(wv), drop = FALSE] %*% wv)
 #' @return Character vector of class names. Zero is the mean of the sites analysed, so classes are relative priorities;
 #'   a score of exactly zero is assigned to the higher class.
 classify <- function(feas, urg) {
-  ifelse(feas >= 0 & urg >= 0, "Immediate restoration",
-  ifelse(feas <  0 & urg >= 0, "Triage and foundational support",
-  ifelse(feas >= 0 & urg <  0, "Proactive reinforcement", "Monitoring only")))
+  # Labels come from CLASSES (R/defaults.R), so they are defined in one place.
+  ifelse(feas >= 0 & urg >= 0, CLASSES$class[1],
+  ifelse(feas <  0 & urg >= 0, CLASSES$class[2],
+  ifelse(feas >= 0 & urg <  0, CLASSES$class[3], CLASSES$class[4])))
 }
 
 #' Point scores for a set of units: PCA, standardisation, indices and classes.
