@@ -1,6 +1,6 @@
 # Citation metadata (Citation File Format). Zenodo reads this file when a
 # GitHub release is archived. The release date is taken from the GitHub
-# release; add the Zenodo concept DOI below after the first release.
+# release. The DOI below is the Zenodo concept DOI (all versions).
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Reef Restoration Prioritisation Tool"
@@ -42,4 +42,4 @@ keywords:
   - Eastern Tropical Pacific
 repository-code: "https://github.com/CarolineVPalmer/Reef_Restoration_Tool"
 url: "https://carolinevpalmer.github.io/Reef_Restoration_Tool/"
-# doi: "[Zenodo concept DOI, added after the first release]"
+doi: "10.5281/zenodo.24532897"

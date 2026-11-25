@@ -1,5 +1,7 @@
 # Reef Restoration Prioritisation Tool
 
+[![DOI](https://zenodo.org/badge/1425541404.svg)](https://doi.org/10.5281/zenodo.24532897)
+
 A free, point-and-click R Shiny tool that turns routine coral reef transect data into **relative** restoration priorities for the sites a team monitors. For each site it calculates a Feasibility index (relative reef condition), an Urgency index (relative pressure) and a donor-site score. It places sites on a Feasibility–Urgency decision plane with bootstrap uncertainty, links each management class to a broad intervention pathway, and reports absolute alerts beside the relative classes.
 
 The tool is a first-pass screening step before detailed site-suitability assessment. It is not a measure of restoration success and has not been validated against restoration outcomes.
@@ -91,7 +93,11 @@ Each GitHub release is archived on Zenodo, which issues a DOI. Connect the repos
 
 ## Citation
 
-See `CITATION.cff`. [Add the manuscript reference and the Zenodo DOI after release.]
+If you use the tool, please cite the software:
+
+Palmer, C. V. (2026). *Reef Restoration Prioritisation Tool* [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24532897
+
+This DOI always points to the latest version. To cite the exact version you used, use that version's DOI from the Zenodo record (v2.7.0: https://doi.org/10.5281/zenodo.24532898). The accompanying manuscript is in preparation; its reference will be added here when it is published. Citation details are also in `CITATION.cff`.
 
 ## Use of AI assistance
 
