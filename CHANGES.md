@@ -1,9 +1,16 @@
 # Changes
 
+## Version 2.7.0 (25 November 2026)
+
+- **Management classes renamed and reworded** (design record: `docs/design_decisions_v2.7.0.md`). A Assess for active restoration (was Immediate restoration); B Address barriers to recovery (was Triage and foundational support); C Protect and maintain (was Proactive reinforcement); D Monitor and reassess (was Monitoring only). Letters, boundaries, colours and all results are unchanged.
+- Each class now has a one-line summary (results tables, decision plane, exports; still in the `recommendation` column) and a full description, shown under "What each class means" on the Recommendations tab. The descriptions refer to the alerts where they change the advice (hold outplanting during severe bleaching; stabilise rubble first; low coral cover means natural recovery is unlikely), and class D states that low relative Urgency does not mean recovery is under way.
+- Class colours are keyed by letter rather than by label, and class labels are defined once (`CLASSES` in `R/defaults.R`).
+- FS (fleshy seaweed) as macroalgae, introduced in 2.6.2, is confirmed.
+
 ## Version 2.6.2 (10 November 2026)
 
 - **Reef Check database exports are read directly.** The substrate export (`Substrate.csv`: one row per survey, 20 m segment and code, with the count in `total`) is recognised and converted without manual reformatting. Hard coral includes points recorded as bleached (HC/B) or diseased (HC/D); soft coral (SC) is not counted as coral. Rows without data, which Reef Check flags as errors, are left out and reported. Collector names are not carried over.
-- The code FS (fleshy seaweed), which appears in recent exports, is read as macroalgae together with NIA [to confirm with Reef Check].
+- The code FS (fleshy seaweed), which appears in recent exports, is read as macroalgae together with NIA (confirmed in 2.7.0).
 - When an upload covers several countries or more than two years, a note explains that classes compare all sites in one snapshot and suggests choosing a survey window.
 
 ## Version 2.6.1 (2 November 2026)

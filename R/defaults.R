@@ -7,7 +7,7 @@
 # Moved verbatim from analysis.R (v2.3.0); roxygen headers added.
 # =============================================================================
 
-APP_VERSION <- "2.6.2"
+APP_VERSION <- "2.7.0"
 
 # -----------------------------------------------------------------------------
 # 1. Defaults
@@ -142,22 +142,69 @@ FLAG_RULES <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Management classes (v2.7.0). Labels and wording were revised with Lucy and
+# Chris: "Immediate restoration" overstated what a relative class A supports
+# (and contradicted the severe-bleaching alert, which says to hold outplanting),
+# and "Triage" can read as abandoning a site. Letters stay tied to the same
+# quadrants as before, so earlier results keep their meaning.
+#   class          short label shown in tables, plots and exports
+#   pathway        letter A-D (quadrant)
+#   recommendation one-line summary (kept under this name so exports and
+#                  settings from earlier versions still line up)
+#   description    full guidance shown in the app's help text and Table S2
 CLASSES <- data.frame(
-  class = c("Immediate restoration", "Triage and foundational support", "Proactive reinforcement", "Monitoring only"),
+  class = c("Assess for active restoration", "Address barriers to recovery", "Protect and maintain", "Monitor and reassess"),
   pathway = c("A", "B", "C", "D"),
   recommendation = c(
-    "Relatively good condition under relatively high pressure: carry out a detailed site-suitability assessment, then active restoration where conditions allow.",
-    "Poorer condition under relatively high pressure: identify and manage limiting pressures first (e.g. substrate stability, herbivory, local threats) before outplanting.",
-    "Relatively good condition under lower pressure: candidate for nurseries, donor material and reinforcement.",
-    "Poorer condition under lower pressure: allow natural recovery and re-survey; reassess if pressure increases."),
+    "Conditions appear relatively favourable but pressure is relatively high: assess the site in detail before any active restoration.",
+    "Conditions appear relatively less favourable and pressure is relatively high: identify and reduce what limits natural recovery first.",
+    "Conditions appear relatively favourable and pressure is relatively low: maintain them, monitor, and consider the site as a donor or nursery source.",
+    "Conditions appear relatively less favourable but pressure is relatively low: a lower priority for immediate restoration; monitor and reassess."),
+  description = c(
+    paste("Ecological conditions appear relatively favourable for active restoration, although the site is under relatively high pressure.",
+          "A detailed site-suitability assessment is needed to identify the factors that may limit recovery, such as substrate condition,",
+          "algal competition and the likelihood of further disturbance, and to determine whether these pressures can be reduced or managed.",
+          "A high Feasibility score does not guarantee restoration success, and monitoring, management of the underlying pressures or",
+          "alternative interventions may be needed before active restoration is undertaken.",
+          "Where the severe-bleaching alert is shown, outplanting should wait until bleaching has subsided."),
+    paste("Ecological conditions appear relatively less favourable for restoration, and the site is under relatively high pressure.",
+          "Identifying and addressing the factors that may limit natural recovery should come before any active restoration.",
+          "A site assessment should look for barriers such as unstable substrate, algal competition, reduced herbivory or continuing",
+          "disturbance, and management should focus on reducing these stressors so that natural recovery becomes more likely.",
+          "Continued monitoring and reassessment will show whether conditions improve and natural recovery begins, or whether active",
+          "restoration becomes appropriate. Where the rubble alert (above 30%) is shown, stabilising the substrate is likely to be the first step."),
+    paste("Ecological conditions appear relatively favourable and the site is under comparatively low pressure.",
+          "The priority is to maintain these conditions, with continued monitoring to detect any change in reef condition.",
+          "Active restoration may not be necessary while the reef maintains its current condition or recovers naturally.",
+          "The site may be a suitable source of donor corals or nursery material, subject to an assessment of coral health, abundance,",
+          "genetic diversity and the likely impact of collection; the donor shortlist in this tool is a starting point for that assessment."),
+    paste("Ecological conditions appear relatively less favourable for restoration, although the site is under relatively low pressure.",
+          "Where resources are limited, these sites are a lower priority for immediate restoration.",
+          "Lower relative pressure does not mean that recovery is under way: a site where coral has already collapsed can score low on",
+          "Urgency because little coral remains to bleach or become diseased. Where the coral-cover alert (below 10%) is shown, natural",
+          "recovery is unlikely, and further assessment of the factors limiting recovery is advisable. Reassessment is appropriate where",
+          "there is evidence of further degradation, emerging pressures or changes in reef condition that could justify additional",
+          "management or restoration.")),
   stringsAsFactors = FALSE
 )
+
+# Sentence shown above the class descriptions in the app (v2.7.0).
+CLASS_INTRO <- paste("These classes compare the sites in the data you uploaded with one another.",
+                     "They suggest where to look first and what kind of action to consider;",
+                     "they do not predict whether restoration will succeed.")
+
 # Okabe-Ito colours, distinguishable with the common forms of colour blindness
 # (v2.4.0; previously a red-green pair separated classes A and B). Class
 # letters (A-D) are shown in the decision-plane legend; points could also be
 # given class-specific shapes if colour alone proves insufficient.
-CLASS_COLOURS <- c("Immediate restoration" = "#009E73", "Triage and foundational support" = "#D55E00",
-                   "Proactive reinforcement" = "#0072B2", "Monitoring only" = "#999999")
+# Keyed by letter since v2.7.0, so that renaming a class cannot break the colours;
+# use class_colours() to get them keyed by label.
+CLASS_COLOURS <- c(A = "#009E73", B = "#D55E00", C = "#0072B2", D = "#999999")
+
+#' Class colours keyed by class label.
+#'
+#' @return Named character vector of colours, one per entry in `CLASSES$class`.
+class_colours <- function() setNames(CLASS_COLOURS[CLASSES$pathway], CLASSES$class)
 
 # Input variables recognised by name (case-insensitive). All cover and
 # prevalence variables are proportions (0-1); 0-100 is converted automatically.

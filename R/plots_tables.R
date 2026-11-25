@@ -39,7 +39,7 @@ plot_decision_plane <- function(r, base_size = 13) {
   s$flag <- ifelse(s$borderline != "No" | s$below_min, paste0(s$site, "*"), s$site)
   s$data <- ifelse(s$below_min, "Fewer transects than the minimum", "Adequate")
   s$class <- factor(paste0(s$pathway, ". ", s$class), levels = paste0(CLASSES$pathway, ". ", CLASSES$class))
-  cols <- setNames(CLASS_COLOURS[CLASSES$class], levels(s$class))
+  cols <- setNames(CLASS_COLOURS[CLASSES$pathway], levels(s$class))
   lab <- if (requireNamespace("ggrepel", quietly = TRUE))
     ggrepel::geom_text_repel(ggplot2::aes(label = flag), size = base_size / 3.4, show.legend = FALSE, seed = 1, min.segment.length = 0.3) else
     ggplot2::geom_text(ggplot2::aes(label = flag), vjust = -1, size = base_size / 3.4, show.legend = FALSE)
@@ -76,7 +76,7 @@ plot_trajectories <- function(r, base_size = 13) {
     ggplot2::geom_path(colour = "grey55", arrow = ggplot2::arrow(length = ggplot2::unit(0.18, "cm"), type = "closed")) +
     ggplot2::geom_point(ggplot2::aes(colour = class), size = 2) +
     ggplot2::geom_text(data = last, ggplot2::aes(label = site), size = base_size / 4, vjust = -0.9) +
-    ggplot2::scale_colour_manual(values = CLASS_COLOURS, name = NULL, drop = FALSE) +
+    ggplot2::scale_colour_manual(values = class_colours(), name = NULL, drop = FALSE) +
     ggplot2::facet_wrap(~ site) +
     ggplot2::labs(x = "Feasibility (relative to all site-periods)", y = "Urgency (relative to all site-periods)",
                   caption = "Descriptive only: each site-period scored on a common scale; arrows run from earlier to later periods.") +
