@@ -99,4 +99,4 @@ The code, tests and documentation were developed with assistance from Claude (An
 
 ## Licence
 
-Code: MIT (see `LICENSE`). [Confirm. Data, when released: CC BY 4.0 is suggested.]
+Code: MIT licence, copyright (c) 2026 Caroline V. Palmer (see `LICENSE`). Data are not included in this repository; any data released later will carry their own licence.
